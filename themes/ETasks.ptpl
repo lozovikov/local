@@ -1,0 +1,1411 @@
+<?php
+// version: 1.3.3
+// date: 2013-11-15
+global $Engine, $Auth, $EE;
+
+if(!isset($MODULE_OUTPUT['scripts_mode'])) {$MODULE_OUTPUT['scripts_mode'] = 'default';}
+	switch($MODULE_OUTPUT['scripts_mode']) {
+		case "task_count": {
+			$EE["head_extra3"][] = <<<END
+	<script type="text/javascript">
+		jQuery(document).ready(function($) {
+			TaskCount = function(module_id) {
+				setTimeout(function() {
+					var request = {'module': module_id, 'mode': 'html_code', 'params': 'user_task_count' };
+					jQuery.ajax({
+						type: 'POST',
+						url: '/ajax_mode/', 
+						data: request,
+						success: function( data ) {
+							if(!(!data || !data.documentElement)) {
+								var rootNodeName = data.documentElement.nodeName;
+								if(rootNodeName != 'parsererror') {
+									xmlDocElem = data.documentElement;
+									if(rootNodeName == 'user_tasks') {
+										var new_tasks = xmlDocElem.getElementsByTagName('new_tasks').item(0).firstChild.data;
+										var current_tasks = xmlDocElem.getElementsByTagName('current_tasks').item(0).firstChild.data;
+										var tobechecked_tasks = xmlDocElem.getElementsByTagName('tobechecked_tasks').item(0).firstChild.data;
+									
+										if(jQuery('#header #login_search .tasks_count').length) {
+											jQuery('#header #login_search .tasks_count .new_tasks span').html(new_tasks);
+											jQuery('#header #login_search .tasks_count .new_current span').html(current_tasks);
+											jQuery('#header #login_search .tasks_count .new_tobechecked span').html(tobechecked_tasks);
+										} else {
+											var str = '<div class="tasks_count"><div class="tasks_count_title"><a href="/office/tasks/">Задачи</a></div><p class="new_tasks">Новые: <span>'+new_tasks+'</span></p><p class="new_current">На выполнении: <span>'+current_tasks+'</span></p><p class="new_tobechecked">На проверке: <span>'+tobechecked_tasks+'</span></p></div>';
+											jQuery('#header #login_search').append(str);
+										}
+										if(jQuery('#for_me_tasks_href').length) {
+											jQuery('#for_me_tasks_href span').html('('+new_tasks+')');
+										}
+									}
+								}
+							}
+						}
+					});
+					setTimeout(arguments.callee, 60000);
+				}, 60000);
+			};
+		});
+	</script>
+END;
+		}
+		break;
+		
+		case 'input_calendar': {
+			$EE["head_extra3"][] = <<<END
+	<script type="text/javascript">
+		jQuery(document).ready(function($) { 
+			InputCalendar = function() {
+				$('input.date_time').datepicker({
+					closeText: 'Закрыть', // Display text for close link
+					prevText: 'Предыдущий', // Display text for previous month link
+					nextText: 'Следующий', // Display text for next month link
+					currentText: 'Сегодня', // Display text for current month link
+					monthNames: ['Январь','Февраль','Март','Апрель','Май','Июнь', 'Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'], // Names of months for drop-down and formatting
+					monthNamesShort: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июнь', 'Июль', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'], // For formatting
+					dayNames: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'], // For formatting
+					dayNamesShort: ['Вос', 'Пон', 'Втор', 'Сре', 'Чет', 'Пят', 'Суб'], // For formatting
+					dayNamesMin: ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'], // Column headings for days starting at Sunday
+					weekHeader: 'Wk', // Column header for week of the year
+					dateFormat: 'yy-mm-dd', // See format options on parseDate);
+					//timeFormat: 'hh:mm:ss',
+					//ampm: false,
+					//hourMin: 8,
+					//hourMax: 18,
+					//timeOnlyTitle: 'Выберите время',
+					//timeText: 'Время',
+					//hourText: 'Часы',
+					//minuteText: 'Минуты',
+					//secondText: 'Секунды',
+					//init_this_time: true,
+					firstDay: 1,
+				});
+			};
+		});
+	</script>
+END;
+		}
+		break;
+	
+		case "tasks": {
+			$pref = substr($Engine->unqueried_uri, -8) == 'reports/' ? '' : 'reports/';
+			$html_themes = HTTP_THEMES;
+			$EE["head_extra3"][] = <<<END
+	<script type='text/javascript'>
+		Tasks = function(module_id,showMode,printMode,userId,statusesToShow,initStatusesToShow,taskStatuses_1) {
+			var task_mode = showMode;
+			var user_id = userId;
+			var author_id = userId;
+			var executor_id = '';
+			var assign_date_from = '';
+			var assign_date_to = '';
+			var assigner = '';
+			var init_statuses_to_show = new Array(); 
+			var statuses_to_show = new  Array(); 
+			var print_mode = printMode;
+			var statuses_to_show = statusesToShow;
+			var init_statuses_to_show = initStatusesToShow;
+			
+			var access_denied_msg = 'acc_denied';
+			var task_table_header_pattern = {'my': '<table id="task_table" width="1000px" cellspacing="2" cellpadding="3"><tr id="task_table_header" height="30px" bgcolor="#BBBBBB"><td width="1px" align="center"><strong>Дата поступления</strong></td><td align="center"><strong>Кто озадачил</strong></td><td align="center"><strong>Исполнитель</strong></td><td align="center"><strong>Описание</strong></td><td align="center"><strong>Статус</strong></td><td width="1px" align="center"><strong>Дата назначения</strong></td><td width="1px" align="center"><strong>Дата выполнения</strong></td><td align="center"><strong>Комментарий исполнителя</strong></td><td align="center"><strong>Снять</strong></td></tr></table>', 'me': '<table id="task_table" width="1000px" cellspacing="2" cellpadding="3"><tr id="task_table_header" height="30px" bgcolor="#BBBBBB"><td width="1px" align="center"><strong>Дата поступления</strong></td><td align="center"><strong>Кто озадачил</strong></td><td align="center"><strong>Описание</strong></td><td align="center"><strong>Статус</strong></td><td width="1px" align="center"><strong>Дата назначения</strong></td><td width="1px" align="center"><strong>Дата выполнения</strong></td><td align="center"><strong>Комментарий исполнителя</strong></td></tr></table>', 'all': '<table id="task_table" width="1000px" cellspacing="2" cellpadding="3"><tr id="task_table_header" height="30px" bgcolor="#BBBBBB"><td width="1px" align="center"><strong>Дата поступления</strong></td><td align="center"><strong>Кто озадачил</strong></td><td align="center"><strong>Исполнитель</strong></td><td align="center"><strong>Описание</strong></td><td align="center"><strong>Статус</strong></td><td width="1px" align="center"><strong>Дата назначения</strong></td><td width="1px" align="center"><strong>Дата выполнения</strong></td><td align="center"><strong>Комментарий исполнителя</strong></td></tr></table>', 'edit_all': '<table id="task_table" width="1000px" cellspacing="2" cellpadding="3"><tr id="task_table_header" height="30px" bgcolor="#BBBBBB"><td width="1px" align="center"><strong>Дата поступления</strong></td><td align="center"><strong>Кто озадачил</strong></td><td align="center"><strong>Исполнитель</strong></td><td align="center"><strong>Описание</strong></td><td align="center"><strong>Статус</strong></td><td width="1px" align="center"><strong>Дата назначения</strong></td><td width="1px" align="center"><strong>Дата выполнения</strong></td><td align="center"><strong>Комментарий исполнителя</strong></td><td align="center"><strong>Снять</strong></td></tr></table>', 'executor_reports': '<table id="task_table" width="1000px" cellspacing="2" cellpadding="3"><tr id="task_table_header" height="30px" bgcolor="#BBBBBB"><td width="1px" align="center"><strong>Дата поступления</strong></td><td align="center"><strong>Кто озадачил</strong></td><td align="center"><strong>Исполнитель</strong></td><td align="center"><strong>Описание</strong></td><td align="center"><strong>Статус</strong></td><td width="1px" align="center"><strong>Дата назначения</strong></td><td width="1px" align="center"><strong>Дата выполнения</strong></td><td align="center"><strong>Комментарий исполнителя</strong></td></tr></table>'};
+			var task_table_row_pattern = {'my': '<tr id="%id%"><td align="center">%creation_date%</td><td>%author_td%</td><td>%executor_td%</td><td>%description_td%</td><td align="center">%status% %status_updater%</td><td align="center" title="%execution_start_date%" class="start-date">%assignment_date%</td><td align="center" class="finish-date">%execution_finish_date%</td><td>%executor_comment% %comment_updater%</td><td align="center">%unassigner%</td></tr>', 'me': '<tr id="%id%"><td align="center">%creation_date%</td><td title="назначитель - %assigner_name%">%author_name% %executor_updater%</td><td>%description%</td><td align="center">%status% %status_updater%</td><td align="center" title="%execution_start_date%" class="start-date">%assignment_date%</td><td align="center" class="finish-date">%execution_finish_date%</td><td>%executor_comment% %comment_updater%</td></tr>', 'all': '<tr id="%id%"><td  align="center">%creation_date%</td><td title="назначитель - %assigner_name%">%author_name%</td><td>%executor_td%</td><td>%description%</td><td align="center">%status%</td><td align="center" title="%execution_start_date%" class="start-date">%assignment_date%</td><td align="center" class="finish-date">%execution_finish_date%</td><td>%executor_comment%</td></tr>', 'edit_all': '<tr id="%id%"><td align="center">%creation_date%</td><td title="назначитель - %assigner_name%">%author_td%</td><td>%executor_td%</td><td>%description%</td><td align="center">%status% %status_updater%</td><td align="center" title="%execution_start_date%" class="start-date">%assignment_date%</td><td align="center" class="finish-date">%execution_finish_date%</td><td>%executor_comment% %comment_updater%</td><td align="center">%unassigner%</td></tr>', 'executor_reports': '<tr id="%id%"><td align="center">%creation_date%</td><td title="назначитель - %assigner_name%">%author_name%</td><td>%executor_td%</td><td>%description%</td><td align="center">%status% %status_updater%</td><td align="center" title="%execution_start_date%" class="start-date">%assignment_date%</td><td align="center" class="finish-date">%execution_finish_date%</td><td>%executor_comment% %comment_updater%</td></tr>'};
+			var no_tasks_msg_pattern = '<p id="no_tasks_msg"><strong>Задач не найдено.</strong></p>';
+			var author_td_pattern = '<input type="text" value="%author_name%" /> %author_updater%';
+			var author_td_done_pattern = '%author_name%';
+			var executor_updater_pattern = '<div class="href executor-update"><img src="{$html_themes}images/edit.png" title="%title%" /></div>';
+			var  executor_td_header_pattern = '<div><div class="href executor-add"><img src="{$html_themes}images/edit-add.png" title="Добавить исполнителя" /></div></div><hr />';
+			var executor_td_pattern = '<div style="margin-bottom:10px"><a href="{$pref}#%executor_id%">%executor_name%</a> %executor_updater%</div>';
+			var executor_td_done_pattern = '<a href="{$pref}#%executor_id%">%executor_name%</a>';
+			var description_td_pattern = '%description% %description_updater%';
+			var status_updater_pattern = '<div class="href status-update"><img src="{$html_themes}images/edit.png" title="%title%" /></div>';
+			var statuses_transforms = {'me': {'new': 'current', 'current': 'tobechecked'}, 'my':{'tobechecked': 'done'}, 'edit_all': {'new': 'current', 'current': 'tobechecked', 'tobechecked': 'done'}, 'executor_reports': {'new': 'current', 'current': 'tobechecked', 'tobechecked': 'done'}};
+			var statuses_lables = {'new': 'Новая', 'current': 'Выполняется', 'tobechecked': 'На проверке', 'done': 'Выполнена'};
+			var comment_updater_pattern = '<div class="href"><img src="{$html_themes}images/edit.png" title="%title%" /></div>';
+			var unassigner_pattern = '<div  class="href unassigner" > <img src="{$html_themes}images/delete.png"></div>';
+			var pager_pattern = '<div id="pager" class="pager"></div>';
+			var href_pager_pattern = '<div class="pager-href href" data-pager_num="%page%">%page%&nbsp;</div>';
+			var prev_arrow_pager_pattern = '<div class="pager-href href" data-pager_num="%prev%"  title="Предыдущая страница" id="prev_page_link" class="prev-next-link"><span class="arrow">&larr;&nbsp;</span></div>';
+			var next_arrow_pager_pattern = '<div class="pager-href href" data-pager_num="%next%"  title="Следующая страница" id="next_page_link" class="prev-next-link"><span class="arrow">&nbsp;&rarr;</span></div>';	
+			var updater_titles = {'comment': 'Комментарий к задаче', 'author': 'Сменить назначителя' , 'executor': 'Переназначить исполнителя', 'description': 'Обновить описание задачи', 'status': {'new': 'Взять на исполнение', 'current': 'Уведомить о выполнении' , 'tobechecked': 'Принять работу'}};
+			var cur_page = 1;
+			var time_tail = ' 00:00:00';
+			
+			showExecutorTasks = function(id) {
+				executor_id = id;
+				author_id = '';
+				window.location.hash = id;
+				reloadTasks(1);
+			};
+			
+			changeAuthorName = function(updater_obj) {
+				updateTask({'id': jQuery(updater_obj).parent().parent().get(0).id, 'author_name': jQuery(updater_obj).parent().find('input').attr('value')});
+			};
+			
+			changeCalendarAvailable = function() {
+				if (jQuery('.calendar-field').length>0) {
+					jQuery('.calendar-field').addClass('calendar-field-active');
+					jQuery('.calendar-field-active').removeClass('calendar-field');
+					assign_date_from = jQuery('#assign_date_from').attr('value') + time_tail;
+					assign_date_to = jQuery('#assign_date_to').attr('value') + time_tail;
+					reloadTasks(1);
+				} else {
+					jQuery('.calendar-field-active').addClass('calendar-field');
+					jQuery('.calendar-field').removeClass('calendar-field-active');
+					assign_date_from = '';
+					assign_date_to = '';
+					reloadTasks(1);
+				};
+			};
+			
+			updateStatusesFilter = function(filter_elem) {
+				if (filter_elem.checked) {
+					statuses_to_show[statuses_to_show.length] = filter_elem.getAttribute('data-status');
+				} else { 
+					for(i=0; i< statuses_to_show.length; i++) {
+						if (statuses_to_show[i] == filter_elem.getAttribute('data-status')) {
+							statuses_to_show.splice(i, 1);
+							break;
+						};
+					};
+				};
+				reloadTasks(1);
+			};
+		
+			refreshStatusesFilter = function(is_visible) {
+				if(is_visible) {
+					var mass = document.getElementById('filters_cont').getElementsByTagName('INPUT'); 
+					for(var i=0; i<mass.length; i++) {
+						mass[i].checked=true; 
+					};
+					statuses_to_show = init_statuses_to_show;
+				} else {
+					var mass = document.getElementById('filters_cont').getElementsByTagName('INPUT'); 
+					for(var i=0; i<mass.length; i++) {
+						mass[i].checked=false;
+					};
+					statuses_to_show = new Array(); 
+				};
+				reloadTasks(1);
+			};
+
+			updateAssignersFilter = function(assigners_list) {
+				assigner = assigners_list.options[assigners_list.selectedIndex].value; 
+				reloadTasks(1);
+			};
+
+		
+			changeAddTaskTableDisplay = function() {
+				document.getElementById('add_task_table').style.display = (document.getElementById('add_task_table').style.display == 'none' ? 'block' : 'none');
+				if (document.getElementById('add_task_table').style.display == 'block') {
+					document.getElementById('new_task_submit').focus();
+					document.getElementById('new_task_submit').blur();
+				};
+			};
+		
+			filterOptions = function(options, updater) {
+				var occupiedIds = ';';
+				jQuery(updater).parents('td').find('a').each(function() {occupiedIds += this.href.split('#')[1]+';';} );
+				var filteredOptions = [];
+				for (i=0; i < options.length; i++) {
+					if (occupiedIds.indexOf(';'+options[i].id+';') == -1) {
+						filteredOptions[filteredOptions.length] = options[i];
+					};
+				};
+				return filteredOptions;
+			};
+			
+			changeSubjectName = function(updater_obj, is_new) {  
+				td_parent = jQuery(updater_obj).parent(); 
+				if (!jQuery(updater_obj).children('select').length) {
+					jQuery('<br>').appendTo(td_parent);
+					subject_select = jQuery('<select multiple="multiple"  style="width:150px" onclick="event.cancelBubble = true; "><option id="null_opt"></option></select>');
+					options = filterOptions(jQuery('#new_task_users').children(), updater_obj);
+					jQuery(options).clone().appendTo(subject_select);
+					subject_select.appendTo(updater_obj);
+					subject_select.get(0).focus();
+					jQuery(jQuery(subject_select).children().get(0)).attr('selected', true);
+				} else { 
+					selectSubjectName(jQuery(updater_obj).children('select').get(0), is_new);
+					jQuery(updater_obj).children('br, select').remove();
+				};
+			};
+		
+			selectSubjectName = function(select_obj, is_new) {
+				for (ind = 1; ind < select_obj.options.length; ind++) {
+					if (select_obj.options[ind].selected) {
+						updateTaskExecutors({'task_id': jQuery(select_obj).parent().parent().parent().parent().get(0).id, 'executor_id': select_obj.options[ind].id, 'old_executor_id': (is_new ? 0 : jQuery(select_obj).parent().siblings('a').attr('href').split('#')[1]) });
+						if (!is_new) {
+							newContent = (executor_td_done_pattern.replace( new RegExp('%executor_name%'), select_obj.options[ind].value)).replace(new RegExp('%executor_id%'), select_obj.options[ind].id);
+							jQuery(jQuery(select_obj).parent().parent().contents()[0]).replaceWith(newContent+' ');
+						} else {
+							newContent = (executor_td_pattern.replace( new RegExp('%executor_name%'), select_obj.options[ind].value)).replace(new RegExp('%executor_id%'), select_obj.options[ind].id).replace(new RegExp('%executor_updater%'), executor_updater_pattern.replace( new RegExp('%title%'), 'Переназначить исполнителя'));
+							jQuery(newContent).appendTo(jQuery(select_obj).parent().parent().parent());
+							
+							jQuery(select_obj).parent().parent().parent().find('.executor-update:last').bind('click',  function(e) {return changeSubjectName(this, false)}  );
+						};
+					};
+				};
+				jQuery(select_obj).remove();
+			};
+			
+			changeTasksMode = function(mode) {
+				jQuery('.title').css('text-decoration', 'none');
+				if (mode == 'me' && task_mode != 'me') {
+					executor_id = user_id;
+					author_id = '';
+					jQuery('#for_me_tasks_href').css('text-decoration', 'underline');
+				} else if (mode == 'my' && task_mode != 'my') {
+					author_id = user_id;
+					executor_id = '';
+					jQuery('#my_tasks_href').css('text-decoration', 'underline');
+				} else if(mode == 'all' || mode == 'edit_all') {
+					author_id = '';
+					executor_id = '';
+					jQuery('#all_tasks_href').css('text-decoration', 'underline');
+				};
+				task_mode = mode;
+				reloadTasks(1);
+			};
+		
+			refreshPager = function(pager_output) {  
+				var page = 1;
+				jQuery('#pager').remove();
+				if (pager_output['pages_num'] && pager_output['pages_num'] > 1) {
+					jQuery(pager_pattern).appendTo('#pager_cont');
+			
+					if (pager_output['prev_page']) {	
+						prev_arrow_pager_html = prev_arrow_pager_pattern.replace(new RegExp('%prev%'), pager_output['prev_page']);
+						jQuery(prev_arrow_pager_html).appendTo('#pager')
+					};
+					for (var ind in pager_output['pages_data']) {
+						page = parseInt(ind);
+						if ( (page-1+1) == page) {
+							href_pager_html = href_pager_pattern.replace( new RegExp('%page%', 'g'), page);
+							
+							jQuery(href_pager_html).appendTo('#pager');
+							if (pager_output['pages_data'][ind]['is_current'])  {
+								jQuery('#pager [data-pager_num="'+page+'"] ').removeClass('href');
+								jQuery('#pager [data-pager_num="'+page+'"] ').css('display', 'inline');
+								jQuery('#pager [data-pager_num="'+page+'"] ').wrap('<strong />');
+							} else {
+								jQuery('#pager [data-pager_num="'+page+'"] ').bind('click', function() { return reloadTasks(parseInt(jQuery(this).attr('data-pager_num')))});
+							};
+						} else {
+							href_pager_html = href_pager_pattern.replace( new RegExp('%page%', 'g'), '&hellip;');
+							jQuery(href_pager_html).appendTo('#pager');
+						};
+					};
+					if (pager_output['next_page']) { 
+						next_arrow_pager_html = next_arrow_pager_pattern.replace(new RegExp('%next%'), pager_output['next_page']);
+						jQuery(next_arrow_pager_html).appendTo('#pager')
+					};
+					if (jQuery('#next_page_link')) {
+						jQuery('#next_page_link').bind('click', function() { return reloadTasks(cur_page+1)});
+					};
+				};
+			};
+			
+			reloadTasks = function(tasks_page) { 
+				var task_table_html;
+				var request = {'mode': 'json', 'module': module_id, 'module_uri': (print_mode ? 'print/' : null ), 'params': 'reload_tasks', 'reload_data': { 'from': tasks_page, 'limit': '', 'page': tasks_page, 'filters': {'mode': task_mode, 'author': author_id, 'executor': executor_id, 'assign_date_from': assign_date_from , 'assign_date_to': assign_date_to , 'assigner': assigner, 'statuses': statuses_to_show.join(';')} } };
+				
+				jQuery.getJSON('/ajax_mode/', request, function(response) {
+					if (jQuery('#task_table')) jQuery('#task_table').remove();
+					if (jQuery('#no_tasks_msg')) jQuery('#no_tasks_msg').remove();
+					if (checkResponse(response)) { 
+						for (var ind in response) {
+							if (response[ind]['pager_output']) {
+								refreshPager(response[ind]['pager_output']);
+							} else { 
+								if (!document.getElementById('task_table')) {
+									jQuery(task_table_header_pattern[task_mode]).prependTo('#task_table_cont');
+								};
+								task_table_row_html = task_table_row_pattern[task_mode];
+								
+								task_table_row_html = task_table_row_html.replace( new RegExp("%author_td%") , response[ind]['status'] == 'done' ? author_td_done_pattern : author_td_pattern) ;
+								
+								executor_td_html = (task_mode == 'my' || task_mode == 'edit_all') ?  executor_td_header_pattern : '';
+								for (exec_ind in response[ind]['executors']) {
+									executor_td_html +=  response[ind]['status'] == 'done' ? executor_td_done_pattern.replace(new RegExp("%executor_name%"), response[ind]['executors'][exec_ind].name+'<br /><br />').replace(new RegExp("%executor_id%"), response[ind]['executors'][exec_ind]['id']) : executor_td_pattern.replace(new RegExp("%executor_name%"), response[ind]['executors'][exec_ind]['name']).replace(new RegExp("%executor_id%"), response[ind]['executors'][exec_ind]['id']).replace(new RegExp("%executor_updater%"), ( (task_mode == 'my' || task_mode == 'edit_all') ? executor_updater_pattern : '') ).replace(new RegExp("%title%"), 'Переназначить исполнителя');
+								};
+									
+								task_table_row_html = task_table_row_html.replace( new RegExp("%executor_td%") , executor_td_html) ;
+								task_table_row_html = task_table_row_html.replace( new RegExp("%description_td%"), description_td_pattern);
+								
+								for (var key in response[ind]) {
+									task_table_row_html = task_table_row_html.replace( new RegExp('%'+key+'%', 'g') , (response[ind][key] == null ? '' : ( key == 'status' ? statuses_lables[response[ind][key]]: ( (key == 'execution_start_date' && response[ind][key]) ? 'принята исполнителем '+response[ind][key] :response[ind][key]) ) ));
+								};
+								
+								task_table_row_html = task_table_row_html.replace( new RegExp("%description_updater%") , ((task_mode == "my" || task_mode == "executor_reports") ? comment_updater_pattern.replace( new RegExp('%title%'), updater_titles['description']) : '') );
+								task_table_row_html = task_table_row_html.replace( new RegExp("%author_updater%") , (task_mode == "my" || task_mode == "edit_all" || task_mode == "executor_reports"? comment_updater_pattern.replace( new RegExp('%title%'), updater_titles['author']) : '') );
+								task_table_row_html = task_table_row_html.replace( new RegExp("%executor_updater%") , (task_mode == "my" || task_mode == "edit_all" || task_mode == "executor_reports" ? comment_updater_pattern.replace( new RegExp('%title%'), updater_titles['executor']) : '') );
+								task_table_row_html = task_table_row_html.replace( new RegExp("%comment_updater%") , (task_mode == "me" || task_mode == "edit_all" || task_mode == "executor_reports" ? comment_updater_pattern.replace( new RegExp('%title%'), updater_titles['comment']) : '') );
+								task_table_row_html = task_table_row_html.replace( new RegExp("%unassigner%") , (task_mode == "my" || task_mode == "edit_all"? unassigner_pattern : ''));
+								if (updater_titles['status'][response[ind]['status']]) {
+									status_updater_html = status_updater_pattern.replace(new RegExp('%title%'), updater_titles['status'][response[ind]['status']]);
+								};
+								if (task_table_row_html.indexOf('%status_updater%') != -1) {
+									task_table_row_html = task_table_row_html.replace( new RegExp('%status_updater%') , (  (statuses_transforms[task_mode][response[ind]['status']]) ? status_updater_html : '' ));
+								};
+								
+								jQuery(task_table_row_html).appendTo('#task_table');
+							};
+						};
+						if (task_mode == 'my' || task_mode == 'edit_all') { 
+							jQuery('img[title="'+updater_titles['author']+'"]').parent().addClass('author-update');
+							jQuery('img[title="'+updater_titles['executor']+'"]').parent().addClass('executor-update');
+							jQuery('img[title="'+updater_titles['description']+'"]').parent().addClass('description-update');
+							jQuery('.unassigner').bind('click',  function(e) {  return unassignTask(this)}  );
+							jQuery('.author-update').bind('click',  function(e) {  return changeAuthorName(this)}  );
+							jQuery('.executor-add').bind('click',  function(e) { return changeSubjectName(this, true)}  );
+							jQuery('.executor-update').bind('click',  function(e) {  return changeSubjectName(this, false)}  );
+							jQuery('.description-update').live('click',  function(e) {  return setTimeout(changeDescr(this), 1000)}    );
+						}if (task_mode == 'me' || task_mode == 'edit_all' || task_mode == "executor_reports") {
+							jQuery('img[title="'+updater_titles['comment']+'"]').parent().addClass('comment-update');
+							jQuery('.executor-update').removeClass('href');
+							jQuery('.comment-update').bind('click',  function(e) {  changeComment(this);} );
+						};
+						if (jQuery('.status-update')) jQuery('.status-update').bind('click',  function(e) {  updateStatus(this)} );
+						jQuery('#task_table tr:even').filter('[id!="task_table_header"]').css('background', '#E5DDDD');
+						jQuery('#task_table tr:odd').css('background', '#F5EAEA');
+					};
+					if (!document.getElementById('task_table')) {
+						jQuery(no_tasks_msg_pattern).appendTo('#task_table_cont');
+					};
+					
+					cur_page = parseInt(tasks_page);
+					if (print_mode) window.print();
+				});
+			};
+		
+			changeComment = function(comment_cont) {
+				if (!jQuery(comment_cont).children('textarea').length) {
+					comment_form = jQuery('<br /><textarea rows="10" onclick="event.cancelBubble = true; ">'+jQuery(comment_cont).parent().text().trim()+'</textarea>');
+					jQuery(comment_form).appendTo(comment_cont);
+				} else {	
+					comment_text = jQuery(comment_cont).children('textarea').attr('value');
+					task_id = jQuery(comment_cont).closest('tr').attr('id');
+					var request = {'module': module_id, 'params': 'update_task', 'update_data': {'id': task_id, 'executor_comment' : comment_text} };
+					jQuery.ajax({
+						type: 'POST',
+						url: '/ajax_mode/', 
+						data: request,
+						success : function(data) {
+							checkResponse(data);
+							if (data) {
+								jQuery(jQuery(comment_cont).parent().contents()[0]).replaceWith(comment_text);	
+								jQuery(comment_cont).children('br,textarea').remove();
+							};
+						}
+					});
+				};
+			};
+		
+			changeDescr = function(descr_updater) { 
+				descr_cont = jQuery(descr_updater).parent().get(0);
+				if (!jQuery(descr_cont).children('textarea').length) {
+					//descr_form = jQuery('<br /><textarea rows="10" onclick="event.cancelBubble = true; ">'+jQuery(descr_cont).text()+'</textarea>');
+					descr_form = jQuery('<br /><textarea rows="10" onclick="event.cancelBubble = true; ">'+jQuery(descr_cont).html().replace(/<div.+$/, '').replace(/<br>/g, '\\n')+'</textarea>');
+					jQuery(descr_form).appendTo(descr_cont);
+				} else {
+					new_descr = jQuery(descr_cont).children('textarea').attr('value').replace(/\\n/g, '<br>').trim();
+					/*replaceSyms = {  '&#160;&#8223;': /\s"/,  '&ldquo;': /"/, '&#8219;': /'/,  '&lsquo;': /'/, '<br />': /\\n/g};
+						for (var sym in replaceSyms) {
+						new_descr = new_descr.replace( replaceSyms[sym], sym);
+					};*/
+
+					//new_descr = '<span>'+jQuery(descr_cont).children('textarea').attr('value').replace(new RegExp('\\n', 'ig'), '\\n<br />').trim()+'</span>';
+					//new_descr = jQuery(descr_cont).children('textarea').attr('value').trim();
+					task_id = jQuery(descr_cont).closest('tr').attr('id');
+					var request = {'module': module_id, 'params': 'update_task', 'update_data': {'id': task_id, 'description' : encodeURI(new_descr)} };
+					jQuery.ajax({
+						type: 'POST',
+						url: '/ajax_mode/', 
+						data: request,
+						success : function(data) {
+							checkResponse(data);
+							if (data) {
+								var innerDiv = jQuery(descr_cont).find('div');
+								jQuery(descr_cont).children('br,textarea').remove();
+								jQuery(descr_cont).html(new_descr+' ');
+								innerDiv.appendTo(jQuery(descr_cont));	
+							};
+						}
+					});
+				};
+			};
+		
+			showCalendarField = function(e, fieldObj) {	
+				e.cancelBubble=true;
+				if (jQuery(fieldObj).attr('class') == 'calendar-field-active') {
+					fieldObj.select();
+					lcs(fieldObj, updateDateFilter);
+				};
+			};
+		
+			updateDateFilter = function() {
+				assign_date_from = jQuery('#assign_date_from').attr('value') + time_tail;
+				assign_date_to = jQuery('#assign_date_to').attr('value') + time_tail;
+				reloadTasks(1);
+			};
+			
+			checkResponse = function(resp) {
+				if (resp && resp.length && resp != access_denied_msg) {
+					return true;
+				} else {
+					document.location = '';
+				};
+			};
+			
+			updateStatus = function(updater_obj) {
+				if (task_mode == 'edit_all' && !jQuery(jQuery(updater_obj).parent().siblings().find('a').get(0)).text()) {
+					alert('Для задачи не указано исполнителей.');
+					return;
+				};
+				cur_status_lable = jQuery(updater_obj).parent().text().replace(/^\s+|\s+$/g, '');
+				
+				for (var ind in statuses_lables) {
+					if (statuses_lables[ind] == cur_status_lable) {
+						cur_status = ind;
+						break;	
+					};
+				};
+				
+				new_status = statuses_transforms[task_mode][cur_status];
+				if ((task_mode != 'executor_reports') && (new_status == 'tobechecked' && (!(jQuery(updater_obj).parent().parent().find('div.comment-update').parent().text()) || !(jQuery(updater_obj).parent().parent().find('td:last').text().trim().length) ))) {
+					alert('Не заполнено поле комментария.');
+					return;
+				};
+	
+				if (new_status == 'current' || new_status == 'done') {	
+					cur_date = new Date();
+					cur_day = cur_date.getDate();
+					cur_year = cur_date.getFullYear();
+					cur_month = cur_date.getMonth();
+					cur_hours = cur_date.getHours();
+					cur_minutes = cur_date.getMinutes();
+					cur_seconds = cur_date.getSeconds();
+					cur_date = cur_year+'-'+(cur_month<10 ? '0'+(cur_month+1) : (cur_month+1))+'-'+ (cur_day<10 ? '0'+cur_day : cur_day)+' '+ (cur_hours<10 ? '0'+cur_hours : cur_hours) + ':' + (cur_minutes<10 ? '0'+cur_minutes : cur_minutes) + ':' + (cur_seconds<10 ? '0'+cur_seconds : cur_seconds);
+		
+					if (new_status == 'current') {
+						jQuery(updater_obj).find('img').attr('title', updater_titles['status']['current']); 
+						jQuery(updater_obj).parent().parent().find('td.start-date').text(cur_date);
+					} else {
+						jQuery(updater_obj).parent().parent().find('td.finish-date').text(cur_date);
+					};
+				};
+				
+				updateTask({'id': jQuery(updater_obj).parent().parent().get(0).id, 'status': new_status});
+				children = jQuery(updater_obj).parent().children()
+				jQuery(jQuery(updater_obj).parent().contents()[0]).replaceWith(statuses_lables[new_status]);
+				
+				if (!statuses_transforms[task_mode][new_status]) {
+					jQuery(updater_obj).parent().children().remove();
+				};
+			};
+		
+			updatePager = function(pagerHref) {
+				reloadTasks(jQuery(pagerHref).attr('data-pager_num'));
+			};
+		
+			
+			addNewTask = function() {	
+				//task_executor = document.getElementById('new_task_exec').options[document.getElementById('new_task_exec').selectedIndex].id; 
+				//var request = {'module': module_id, 'params': 'add_task', 'add_data': {'task_author': user_id, 'task_executor': task_executor, 'task_descr': document.getElementById('new_task_descr').value} };
+				//task_author = document.getElementById('new_task_auth').options[document.getElementById('new_task_auth').selectedIndex].id;
+				task_author = document.getElementById('new_task_auth').value;
+				
+				task_descr = document.getElementById('new_task_descr').value.replace(/\\n/g, '<br>');
+				
+				/*replaceSyms = {  '&#160;&#8223;': /\s"/,  '&ldquo;': /"/, '&#8219;': /'/,  '&lsquo;': /'/, '<br />': /\\n/g};
+				for (var sym in replaceSyms) {
+					task_descr = task_descr.replace( replaceSyms[sym], sym);
+				};*/
+				
+				if (!task_author || !task_descr) {
+					alert('Необходимо заполнить оба поля.');
+				} else {
+					var request = {'module': module_id, 'params': 'add_task', 'add_data': {'task_author': task_author, 'task_descr': task_descr} };
+					
+					jQuery.ajax({
+						type: 'POST',
+						url: '/ajax_mode/', 
+						data: request,
+						success: function( data ) {
+							checkResponse(data);
+							displayAjaxMsg(data, document.getElementById('add_task_msg_box'));
+							reloadTasks(cur_page);	    	
+							jQuery('#new_task_descr').attr('value', '');
+							jQuery('#new_task_auth').attr('value', '');
+						}
+					});
+				};
+			};
+			
+			unassignTask = function(unassigner_obj) {
+				task_id = jQuery(unassigner_obj).parent().parent().attr('id');
+				if (task_id) {
+					var request = {'module': module_id, 'params': 'unassign_task', 'unassign_data': {'id': task_id} };
+					jQuery.ajax({
+						type: 'POST',
+						url: '/ajax_mode/', 
+						data: request,
+						success: function( data ) {
+							checkResponse(data);
+							jQuery(unassigner_obj).parent().parent().remove();
+							alert(data);
+						}
+					});
+				};
+			};
+			
+			updateTask = function(update_data) {
+				if (update_data.id) {	
+					var request = {'mode': 'json', 'module': module_id, 'params': 'update_task', 'update_data': update_data };
+					jQuery.getJSON('/ajax_mode/', request, 
+						function(response) {
+							if (checkResponse(response)) {
+								for (var ind in response) {
+									if (response[ind]['responseData']) {
+										if (response[ind]['responseData']['id'] && response[ind]['responseData']['assignment_date']) {
+											jQuery('#'+response[ind]['responseData']['id']).find('.start-date').html(response[ind]['responseData']['assignment_date']);
+										};
+									};
+								};
+							};
+						}
+					);
+				};
+			};
+			
+			updateTaskExecutors = function(update_data) {
+				if (update_data.task_id) {	
+					var request = {'mode': 'json', 'module': module_id, 'params': 'update_executors', 'update_data': update_data };
+					jQuery.getJSON('/ajax_mode/', request, 
+						function(response) {
+							if (checkResponse(response)) {
+								for (var ind in response) {
+									if (response[ind]['responseData']) {
+										if (response[ind]['responseData']['id'] && response[ind]['responseData']['assignment_date']) {
+											jQuery('#'+response[ind]['responseData']['id']).find('.start-date').html(response[ind]['responseData']['assignment_date']);
+										};
+									};
+								};
+							};
+						}
+					);
+				};
+			};
+			
+			changeElemDisplay = function(elemId, iter) { 
+				jQuery('#'+elemId).css('display', (jQuery('#'+elemId).css('display') != 'none' ? 'none' : 'inline-block'));
+				if (iter<5) setTimeout('changeElemDisplay("'+elemId+'",'+(iter+1)+')', (jQuery('#'+elemId).css('display') == 'none'  ? 500 : 1000 ));
+			};
+			
+			
+			displayAjaxMsg = function(msg, cont) {
+				cont.innerHTML = '('+msg+')';
+				setTimeout('changeElemDisplay("'+cont.id+'", 0)',500);
+			};
+		
+			var statusesStr = taskStatuses_1;
+		
+			jQuery(document).ready(function($) { 
+				var serviceKeyPressed = false;
+				if ('#new_task_form') {
+					jQuery(document).bind('keyup', function (event) { 
+						if ( event.which == 16 || event.which == 17 ) {
+							serviceKeyPressed = false;
+						};
+					});
+					jQuery(document).bind('keydown', function (event) { 
+						if ( event.which == 16 || event.which == 17 ) {
+							serviceKeyPressed = true;
+						};
+						if ( event.which == 45 && !serviceKeyPressed) {
+							event.preventDefault();
+							changeAddTaskTableDisplay();   			
+						};
+					});
+				}; 
+				jQuery('#filters_cont input').each(function () { if (statusesStr.indexOf(jQuery(this).data('status')) != -1) jQuery(this).attr('checked', true)});
+				jQuery('.status-update :first-child').each(function() { jQuery(this).attr('title', updater_titles['status'][jQuery(this).parent().attr('data-status')])}); 
+				jQuery('.descr-update :first-child').attr('title', updater_titles['description']);
+				jQuery('.executor-update :first-child').attr('title', updater_titles['executor']);
+				jQuery('.author-update :first-child').attr('title', updater_titles['author']);
+				jQuery('.pager-href').bind('click', function() { reloadTasks(jQuery(this).attr('data-pager_num'))});
+		
+				if (window.location.hash) { 
+					jQuery('#executors_list option[id='+window.location.hash.substr(1)+']').attr('selected', true);
+					jQuery('#print_report_href').attr('href', jQuery('#print_report_href').attr('href')+'print/'+window.location.hash);
+					showExecutorTasks(window.location.hash.substr(1));
+				};
+			});	
+		};
+	</script>
+END;
+		}
+		break;
+		case "apply_support": {
+			$EE["head_extra3"][] = <<<END
+	<script type="text/javascript">
+		jQuery(document).ready(function($) { 
+			changeAddTaskTableDisplay = function() {
+				document.getElementById('add_task_table').style.display = (document.getElementById('add_task_table').style.display == 'none' ? 'block' : 'none');
+				if (document.getElementById('add_task_table').style.display == 'block') {
+					document.getElementById('new_app_descr').focus();
+					document.getElementById('new_app_descr').blur();
+				};
+					
+			};
+			
+			
+			get = function(id) {
+				if(typeof(id) == 'object') return id; 
+				var obj = document.getElementById(id);
+				obj.show = function() { this.style.display = ''; return this; }
+				obj.hide = function() { this.style.display = 'none'; return this; }
+				obj.html = function(html) { this.innerHTML = html; return this; }
+				return obj;
+			}
+			
+			showChoice = function(obj, option) {
+				//document.getElementById('add_task_table').style.display = (document.getElementById('add_task_table').style.display == 'none' ? 'block' : 'none');
+				document.getElementById('add_task_table').style.display = 'block';
+				if (document.getElementById('add_task_table').style.display == 'block') {
+					document.getElementById('new_app_descr').focus();
+					document.getElementById('new_app_descr').blur();
+				};
+				
+				
+				var div = document.getElementById('choice_links');
+				var links = div.getElementsByTagName('a'); 
+
+				for(var i = 0; i < links.length; i++) {
+					links[i].style.borderBottomStyle = 'dashed';
+					links[i].style.fontWeight = 'normal';
+				}
+				
+				obj.style.fontWeight = 'bold';
+				obj.style.borderBottomStyle = 'none';
+				
+				document.getElementById('apply_from').style.display = 'block';
+				
+				document.getElementById('new_task_form').elements['subject'].value = option;
+
+				document.getElementById('comp_img').style.display = 'none';
+				document.getElementById('apply_success').style.display = 'none';
+			}
+			
+			insertAtCursor = function(myField, myValue) {
+				if(typeof(myField != 'object')) myField = document.getElementById(myField); 
+			  if (document.selection) {
+				myField.focus();
+				sel = document.selection.createRange();
+				sel.text = myValue;
+			  }
+			  else if (myField.selectionStart || myField.selectionStart == '0') {
+				var startPos = myField.selectionStart;
+				var endPos = myField.selectionEnd;
+				myField.value = myField.value.substring(0, startPos) + myValue + myField.value.substring(endPos, myField.value.length);
+			  }
+			  else {
+				myField.value += myValue;
+			  }
+			}
+			
+			jQuery('#apply_example').bind('click', function(){
+				insertAtCursor('new_app_descr', $(this).html());
+			});
+			
+			applySubmit = function() {
+				var app_descr  = document.getElementById('new_app_descr').value;
+				var app_subject = document.getElementById('new_task_form').elements['subject'].value;
+				if(app_descr == '') {
+					alert('Вы не ввели описание');
+					return false;
+				} 
+				
+				var request = {'module': {$MODULE_OUTPUT['module_id']}, params: 'apply_support', 'add_data': { 'app_descr': app_descr, 'app_subject': app_subject }};
+				jQuery.ajax({
+					type: 'POST',
+					url: '/ajax_mode/',
+					data: request, 
+					success: function(response) {
+						//alert(response);
+						get('new_app_descr').value = '';
+						get('apply_from').style.display = 'none';
+						get('add_task_table').hide();
+						get('apply_success').show().html(response); 
+						if(app_subject == 'comp') get('comp_img').show(); 
+					}
+				});
+			}
+		});
+	</script>
+END;
+		}
+		break; 
+	}
+	
+	
+	$head_Extra = "		
+	<script type='text/javascript'>
+		var task_mode = '".$MODULE_OUTPUT['show_mode']."';
+		var user_id = ".$MODULE_OUTPUT['id']. ";
+		var author_id = ".$MODULE_OUTPUT['id']. ";
+		var executor_id = '';
+		var assign_date_from = '';
+		var assign_date_to = '';
+		var init_statuses_to_show = new Array(); 
+		var statuses_to_show = new  Array(); 
+		var print_mode = ".(isset($MODULE_OUTPUT['to_print'])?1:0).";";
+		foreach ($MODULE_OUTPUT['task_statuses'] as $ind=>$status) 
+		{
+			$head_Extra .= " statuses_to_show[" .$ind. "] = '" .$status. "'; ";
+		} 	
+		foreach ($MODULE_OUTPUT['full_task_statuses'] as $ind=>$status) 
+		{
+			$head_Extra .= " init_statuses_to_show[" .$ind. "] = '" .$status. "'; ";
+		} 	
+		
+		
+		$head_Extra .= "
+		
+		var access_denied_msg = 'acc_denied';
+		var task_table_header_pattern = {'my': '<table id=\"task_table\" width=\"1000px\" cellspacing=\"2\" cellpadding=\"3\"><tr id=\"task_table_header\" height=\"30px\" bgcolor=\"#BBBBBB\"><td width=\"1px\" align=\"center\"><strong>Дата поступления</strong></td><td align=\"center\"><strong>Кто озадачил</strong></td><td align=\"center\"><strong>Исполнитель</strong></td><td align=\"center\"><strong>Описание</strong></td><td align=\"center\"><strong>Статус</strong></td><td width=\"1px\" align=\"center\"><strong>Дата назначения</strong></td><td width=\"1px\" align=\"center\"><strong>Дата выполнения</strong></td><td align=\"center\"><strong>Комментарий исполнителя</strong></td><td align=\"center\"><strong>Снять</strong></td></tr></table>', 'me': '<table id=\"task_table\" width=\"1000px\" cellspacing=\"2\" cellpadding=\"3\"><tr id=\"task_table_header\" height=\"30px\" bgcolor=\"#BBBBBB\"><td width=\"1px\" align=\"center\"><strong>Дата поступления</strong></td><td align=\"center\"><strong>Кто озадачил</strong></td><td align=\"center\"><strong>Описание</strong></td><td align=\"center\"><strong>Статус</strong></td><td width=\"1px\" align=\"center\"><strong>Дата назначения</strong></td><td width=\"1px\" align=\"center\"><strong>Дата выполнения</strong></td><td align=\"center\"><strong>Комментарий исполнителя</strong></td></tr></table>', 'all': '<table id=\"task_table\" width=\"1000px\" cellspacing=\"2\" cellpadding=\"3\"><tr id=\"task_table_header\" height=\"30px\" bgcolor=\"#BBBBBB\"><td width=\"1px\" align=\"center\"><strong>Дата поступления</strong></td><td align=\"center\"><strong>Кто озадачил</strong></td><td align=\"center\"><strong>Исполнитель</strong></td><td align=\"center\"><strong>Описание</strong></td><td align=\"center\"><strong>Статус</strong></td><td width=\"1px\" align=\"center\"><strong>Дата назначения</strong></td><td width=\"1px\" align=\"center\"><strong>Дата выполнения</strong></td><td align=\"center\"><strong>Комментарий исполнителя</strong></td></tr></table>', 'edit_all': '<table id=\"task_table\" width=\"1000px\" cellspacing=\"2\" cellpadding=\"3\"><tr id=\"task_table_header\" height=\"30px\" bgcolor=\"#BBBBBB\"><td width=\"1px\" align=\"center\"><strong>Дата поступления</strong></td><td align=\"center\"><strong>Кто озадачил</strong></td><td align=\"center\"><strong>Исполнитель</strong></td><td align=\"center\"><strong>Описание</strong></td><td align=\"center\"><strong>Статус</strong></td><td width=\"1px\" align=\"center\"><strong>Дата назначения</strong></td><td width=\"1px\" align=\"center\"><strong>Дата выполнения</strong></td><td align=\"center\"><strong>Комментарий исполнителя</strong></td><td align=\"center\"><strong>Снять</strong></td></tr></table>', 'executor_reports': '<table id=\"task_table\" width=\"1000px\" cellspacing=\"2\" cellpadding=\"3\"><tr id=\"task_table_header\" height=\"30px\" bgcolor=\"#BBBBBB\"><td width=\"1px\" align=\"center\"><strong>Дата поступления</strong></td><td align=\"center\"><strong>Кто озадачил</strong></td><td align=\"center\"><strong>Исполнитель</strong></td><td align=\"center\"><strong>Описание</strong></td><td align=\"center\"><strong>Статус</strong></td><td width=\"1px\" align=\"center\"><strong>Дата назначения</strong></td><td width=\"1px\" align=\"center\"><strong>Дата выполнения</strong></td><td align=\"center\"><strong>Комментарий исполнителя</strong></td></tr></table>'};
+		var task_table_row_pattern = {'my': '<tr id=\"%id%\"><td align=\"center\">%creation_date%</td><td>%author_td%</td><td>%executor_td%</td><td>%description_td%</td><td align=\"center\">%status% %status_updater%</td><td align=\"center\" title=\"%execution_start_date%\" class=\"start-date\">%assignment_date%</td><td align=\"center\" class=\"finish-date\">%execution_finish_date%</td><td>%executor_comment% %comment_updater%</td><td align=\"center\">%unassigner%</td></tr>', 'me': '<tr id=\"%id%\"><td align=\"center\">%creation_date%</td><td title=\"назначитель - %assigner_name%\">%author_name% %executor_updater%</td><td>%description%</td><td align=\"center\">%status% %status_updater%</td><td align=\"center\" title=\"%execution_start_date%\" class=\"start-date\">%assignment_date%</td><td align=\"center\" class=\"finish-date\">%execution_finish_date%</td><td>%executor_comment% %comment_updater%</td></tr>', 'all': '<tr id=\"%id%\"><td  align=\"center\">%creation_date%</td><td title=\"назначитель - %assigner_name%\">%author_name%</td><td>%executor_td%</td><td>%description%</td><td align=\"center\">%status%</td><td align=\"center\" title=\"%execution_start_date%\" class=\"start-date\">%assignment_date%</td><td align=\"center\" class=\"finish-date\">%execution_finish_date%</td><td>%executor_comment%</td></tr>', 'edit_all': '<tr id=\"%id%\"><td align=\"center\">%creation_date%</td><td title=\"назначитель - %assigner_name%\">%author_td%</td><td>%executor_td%</td><td>%description%</td><td align=\"center\">%status% %status_updater%</td><td align=\"center\" title=\"%execution_start_date%\" class=\"start-date\">%assignment_date%</td><td align=\"center\" class=\"finish-date\">%execution_finish_date%</td><td>%executor_comment% %comment_updater%</td><td align=\"center\">%unassigner%</td></tr>', 'executor_reports': '<tr id=\"%id%\"><td align=\"center\">%creation_date%</td><td title=\"назначитель - %assigner_name%\">%author_name%</td><td>%executor_td%</td><td>%description%</td><td align=\"center\">%status%</td><td align=\"center\" title=\"%execution_start_date%\" class=\"start-date\">%assignment_date%</td><td align=\"center\" class=\"finish-date\">%execution_finish_date%</td><td>%executor_comment%</td></tr>'};
+		var no_tasks_msg_pattern = '<p id=\"no_tasks_msg\"><strong>Задач не найдено.</strong></p>';
+		var author_td_pattern = '<input type=\"text\" value=\"%author_name%\" /> %author_updater%';
+		var author_td_done_pattern = '%author_name%';
+		var executor_updater_pattern = '<div class=\"href executor-update\"><img src=\"".HTTP_THEMES."images/edit.png\" title=\"%title%\" /></div>';
+		var  executor_td_header_pattern = '<div><div class=\"href executor-add\"><img src=\"".HTTP_THEMES."images/edit-add.png\" title=\"Добавить исполнителя\" /></div></div><hr />';
+		var executor_td_pattern = '<div style=\"margin-bottom:10px\"><a href=\"{$pref}#%executor_id%\">%executor_name%</a> %executor_updater%</div>';
+		var executor_td_done_pattern = '<a href=\"{$pref}#%executor_id%\">%executor_name%</a>';
+		var description_td_pattern = '%description% %description_updater%';
+		var status_updater_pattern = '<div class=\"href status-update\"><img src=\"" .HTTP_THEMES. "images/edit.png\" title=\"%title%\" /></div>';
+		var statuses_transforms = {'me': {'new': 'current', 'current': 'tobechecked'}, 'my':{'tobechecked': 'done'}, 'edit_all': {'new': 'current', 'current': 'tobechecked', 'tobechecked': 'done'}};
+		var statuses_lables = {'new': 'Новая', 'current': 'Выполняется', 'tobechecked': 'На проверке', 'done': 'Выполнена'};
+		var comment_updater_pattern = '<div class=\"href\"><img src=\"". HTTP_THEMES. "images/edit.png\" title=\"%title%\" /></div>';
+		var unassigner_pattern = '<div  class=\"href unassigner\" > <img src=\"" .HTTP_THEMES. "images/delete.png\"></div>';
+		var pager_pattern = '<div id=\"pager\" class=\"pager\"></div>';
+		var href_pager_pattern = '<div class=\"pager-href href\" data-pager_num=\"%page%\">%page%&nbsp;</div>';
+		var prev_arrow_pager_pattern = '<div class=\"pager-href href\" data-pager_num=\"%prev%\"  title=\"Предыдущая страница\" id=\"prev_page_link\" class=\"prev-next-link\"><span class=\"arrow\">&larr;&nbsp;</span></div>';
+		var next_arrow_pager_pattern = '<div class=\"pager-href href\" data-pager_num=\"%next%\"  title=\"Следующая страница\" id=\"next_page_link\" class=\"prev-next-link\"><span class=\"arrow\">&nbsp;&rarr;</span></div>';	
+		var updater_titles = {'comment': 'Комментарий к задаче', 'author': 'Сменить назначителя' , 'executor': 'Переназначить исполнителя', 'description': 'Обновить описание задачи', 'status': {'new': 'Взять на исполнение', 'current': 'Уведомить о выполнении' , 'tobechecked': 'Принять работу'}};
+		var cur_page = 1;
+		var time_tail = ' 00:00:00';
+	
+		
+		function showExecutorTasks(id)
+		{
+			executor_id = id;
+			author_id = '';
+			window.location.hash = id;
+			reloadTasks(1);
+		}
+		
+		function changeAuthorName(updater_obj)
+		{
+			updateTask({'id': jQuery(updater_obj).parent().parent().get(0).id, 'author_name': jQuery(updater_obj).parent().find('input').attr('value')});
+		}
+		
+		function changeCalendarAvailable()
+		{
+			if (jQuery('.calendar-field').length>0)
+			{
+				jQuery('.calendar-field').addClass('calendar-field-active');
+				jQuery('.calendar-field-active').removeClass('calendar-field');
+				assign_date_from = jQuery('#assign_date_from').attr('value') + time_tail;
+				assign_date_to = jQuery('#assign_date_to').attr('value') + time_tail;
+				reloadTasks(1);
+			}
+			else
+			{
+				jQuery('.calendar-field-active').addClass('calendar-field');
+				jQuery('.calendar-field').removeClass('calendar-field-active');
+				assign_date_from = '';
+				assign_date_to = '';
+				reloadTasks(1);
+			}
+		}
+		
+		function updateStatusesFilter(filter_elem)
+		{
+			if (filter_elem.checked)
+				statuses_to_show[statuses_to_show.length] = filter_elem.getAttribute('data-status');
+			else
+			{ 
+				for(i=0; i< statuses_to_show.length; i++)
+					if (statuses_to_show[i] == filter_elem.getAttribute('data-status'))
+					{
+						statuses_to_show.splice(i, 1);
+						break;
+					}
+			}
+			
+			reloadTasks(1);
+		}
+
+		function updateAssignersFilter(assigners_list) 
+		{
+			assigner = assigners_list.options[assigners_list.selectedIndex].value;
+			reloadTasks(1);
+		}
+	
+		function refreshStatusesFilter(is_visible)
+		{
+			if (is_visible)
+			{
+				var mass = document.getElementById('filters_cont').getElementsByTagName('INPUT'); 
+				for (var i=0; i<mass.length; i++) 
+					mass[i].checked=true; 
+				statuses_to_show = init_statuses_to_show;
+				
+			}
+			else
+			{
+				var mass = document.getElementById('filters_cont').getElementsByTagName('INPUT'); 
+				for (var i=0; i<mass.length; i++) 
+					mass[i].checked=false;
+				statuses_to_show = new Array(); 
+			}
+			reloadTasks(1);
+		}
+	
+	
+		function changeAddTaskTableDisplay()
+		{
+			document.getElementById('add_task_table').style.display = (document.getElementById('add_task_table').style.display == 'none' ? 'block' : 'none');
+			if (document.getElementById('add_task_table').style.display == 'block')
+			{
+				document.getElementById('new_task_submit').focus();
+				document.getElementById('new_task_submit').blur();
+			}
+		}
+	
+	
+		function filterOptions(options, updater)
+		{
+			var occupiedIds = ';';
+			jQuery(updater).parents('td').find('a').each(function() {occupiedIds += this.href.split('#')[1]+';';} );
+			var filteredOptions = [];
+			for (i=0; i < options.length; i++)
+				if (occupiedIds.indexOf(';'+options[i].id+';') == -1)
+					filteredOptions[filteredOptions.length] = options[i];
+			return filteredOptions;
+		}
+	
+		
+		function changeSubjectName(updater_obj, is_new)
+		{  
+			td_parent = jQuery(updater_obj).parent(); 
+			if (!jQuery(updater_obj).children('select').length) 
+			{
+				jQuery('<br>').appendTo(td_parent);
+				subject_select = jQuery('<select multiple=\"multiple\"  style=\"width:150px\" onclick=\"event.cancelBubble = true; \"><option id=\"null_opt\"></option></select>');
+				options = filterOptions(jQuery('#new_task_users').children(), updater_obj);
+				jQuery(options).clone().appendTo(subject_select);
+				subject_select.appendTo(updater_obj);
+				subject_select.get(0).focus();
+				jQuery(jQuery(subject_select).children().get(0)).attr('selected', true);
+			} 
+			else { 
+				selectSubjectName(jQuery(updater_obj).children('select').get(0), is_new);
+				jQuery(updater_obj).children('br, select').remove();
+			}
+		}
+	
+	
+		function selectSubjectName(select_obj, is_new)
+		{	
+			
+			for (ind = 1; ind < select_obj.options.length; ind++)
+				if (select_obj.options[ind].selected)
+				{
+					updateTaskExecutors({'task_id': jQuery(select_obj).parent().parent().parent().parent().get(0).id, 'executor_id': select_obj.options[ind].id, 'old_executor_id': (is_new ? 0 : jQuery(select_obj).parent().siblings('a').attr('href').split('#')[1]) });
+					if (!is_new) {
+						newContent = (executor_td_done_pattern.replace( new RegExp('%executor_name%'), select_obj.options[ind].value)).replace(new RegExp('%executor_id%'), select_obj.options[ind].id);
+						jQuery(jQuery(select_obj).parent().parent().contents()[0]).replaceWith(newContent+' ');
+					}
+					else {
+						newContent = (executor_td_pattern.replace( new RegExp('%executor_name%'), select_obj.options[ind].value)).replace(new RegExp('%executor_id%'), select_obj.options[ind].id).replace(new RegExp('%executor_updater%'), executor_updater_pattern.replace( new RegExp('%title%'), 'Переназначить исполнителя'));
+						jQuery(newContent).appendTo(jQuery(select_obj).parent().parent().parent());
+						
+						jQuery(select_obj).parent().parent().parent().find('.executor-update:last').bind('click',  function(e) {return changeSubjectName(this, false)}  );
+					}
+				}
+			jQuery(select_obj).remove();
+			
+		}
+		
+		
+		function changeTasksMode(mode)
+		{
+			
+			jQuery('.title').css('text-decoration', 'none');
+			if (mode == 'me' && task_mode != 'me')
+			{
+				executor_id = user_id;
+				author_id = '';
+				jQuery('#for_me_tasks_href').css('text-decoration', 'underline');
+			}
+			else if (mode == 'my' && task_mode != 'my')
+			{
+				author_id = user_id;
+				executor_id = '';
+				jQuery('#my_tasks_href').css('text-decoration', 'underline');
+			}
+			else if(mode == 'all' || mode == 'edit_all')
+			{
+				author_id = '';
+				executor_id = '';
+				jQuery('#all_tasks_href').css('text-decoration', 'underline');
+			}
+			task_mode = mode;
+			reloadTasks(1);
+		}
+	
+	
+		function refreshPager(pager_output)
+		{  
+			var page = 1;
+			jQuery('#pager').remove();
+			if (pager_output['pages_num'] && pager_output['pages_num'] > 1)
+			{
+				jQuery(pager_pattern).appendTo('#pager_cont');
+		
+				if (pager_output['prev_page'])
+		        {	
+		            prev_arrow_pager_html = prev_arrow_pager_pattern.replace(new RegExp('%prev%'), pager_output['prev_page']);
+		            jQuery(prev_arrow_pager_html).appendTo('#pager')
+		        }
+				for (var ind in pager_output['pages_data'])
+				{
+					page = parseInt(ind);
+					if ( (page-1+1) == page)
+					{
+						href_pager_html = href_pager_pattern.replace( new RegExp('%page%', 'g'), page);
+						
+						jQuery(href_pager_html).appendTo('#pager');
+						if (pager_output['pages_data'][ind]['is_current']) 
+						{
+							jQuery('#pager [data-pager_num=\"'+page+'\"] ').removeClass('href');
+							jQuery('#pager [data-pager_num=\"'+page+'\"] ').css('display', 'inline');
+							jQuery('#pager [data-pager_num=\"'+page+'\"] ').wrap('<strong />');
+						}
+						else
+							jQuery('#pager [data-pager_num=\"'+page+'\"] ').bind('click', function() { return reloadTasks(parseInt(jQuery(this).attr('data-pager_num')))});
+					}
+					else
+					{
+						href_pager_html = href_pager_pattern.replace( new RegExp('%page%', 'g'), '". "&hellip;". "');
+						jQuery(href_pager_html).appendTo('#pager');
+					}
+				}
+				if (pager_output['next_page'])
+		        { 
+		            next_arrow_pager_html = next_arrow_pager_pattern.replace(new RegExp('%next%'), pager_output['next_page']);
+		            jQuery(next_arrow_pager_html).appendTo('#pager')
+		        }
+				if (jQuery('#next_page_link'))
+					jQuery('#next_page_link').bind('click', function() { return reloadTasks(cur_page+1)});
+			}
+		}
+		
+		
+		function reloadTasks(tasks_page)
+		{ 
+			
+			var task_table_html;
+			
+			var request = {'mode': 'json', 'module': " .$MODULE_OUTPUT['module_id']. ", 'module_uri': (print_mode ? 'print/' : null ), 'params': 'reload_tasks', 'reload_data': { 'from': tasks_page, 'limit': '', 'page': tasks_page, 'filters': {'mode': task_mode, 'author': author_id, 'executor': executor_id, 'assign_date_from': assign_date_from , 'assign_date_to': assign_date_to , 'assigner': assigner, 'statuses': statuses_to_show.join(';')} } };
+			
+			jQuery.getJSON('/ajax_mode/', request, function(response) {
+		
+				if (jQuery('#task_table')) jQuery('#task_table').remove();
+				if (jQuery('#no_tasks_msg')) jQuery('#no_tasks_msg').remove();
+				if (checkResponse(response)) { 
+						
+					for (var ind in response) {
+						
+						
+						if (response[ind]['pager_output']) 
+							refreshPager(response[ind]['pager_output']);
+						else 
+						{ 
+							if (!document.getElementById('task_table'))
+							{
+								
+								jQuery(task_table_header_pattern[task_mode]).prependTo('#task_table_cont');
+							} 
+							task_table_row_html = task_table_row_pattern[task_mode];
+							
+							
+							task_table_row_html = task_table_row_html.replace( new RegExp(\"%author_td%\") , response[ind]['status'] == 'done' ? author_td_done_pattern : author_td_pattern) ;
+							
+							executor_td_html = (task_mode == 'my' || task_mode == 'edit_all') ?  executor_td_header_pattern : '';
+							for (exec_ind in response[ind]['executors'])
+								executor_td_html +=  response[ind]['status'] == 'done' ? executor_td_done_pattern.replace(new RegExp(\"%executor_name%\"), response[ind]['executors'][exec_ind].name+'<br /><br />').replace(new RegExp(\"%executor_id%\"), response[ind]['executors'][exec_ind]['id']) : executor_td_pattern.replace(new RegExp(\"%executor_name%\"), response[ind]['executors'][exec_ind]['name']).replace(new RegExp(\"%executor_id%\"), response[ind]['executors'][exec_ind]['id']).replace(new RegExp(\"%executor_updater%\"), ( (task_mode == 'my' || task_mode == 'edit_all') ? executor_updater_pattern : '') ).replace(new RegExp(\"%title%\"), 'Переназначить исполнителя'); 
+								
+							task_table_row_html = task_table_row_html.replace( new RegExp(\"%executor_td%\") , executor_td_html) ;
+							task_table_row_html = task_table_row_html.replace( new RegExp(\"%description_td%\"), description_td_pattern);
+							
+							for (var key in response[ind]) 
+							{
+								task_table_row_html = task_table_row_html.replace( new RegExp('%'+key+'%', 'g') , (response[ind][key] == null ? '' : ( key == 'status' ? statuses_lables[response[ind][key]]: ( (key == 'execution_start_date' && response[ind][key]) ? 'принята исполнителем '+response[ind][key] :response[ind][key]) ) ));
+							}
+							
+							task_table_row_html = task_table_row_html.replace( new RegExp(\"%description_updater%\") , (task_mode == \"my\" ? comment_updater_pattern.replace( new RegExp('%title%'), updater_titles['description']) : '') );
+							task_table_row_html = task_table_row_html.replace( new RegExp(\"%author_updater%\") , (task_mode == \"my\" || task_mode == \"edit_all\"? comment_updater_pattern.replace( new RegExp('%title%'), updater_titles['author']) : '') );
+							task_table_row_html = task_table_row_html.replace( new RegExp(\"%executor_updater%\") , (task_mode == \"my\" || task_mode == \"edit_all\"? comment_updater_pattern.replace( new RegExp('%title%'), updater_titles['executor']) : '') );
+							task_table_row_html = task_table_row_html.replace( new RegExp(\"%comment_updater%\") , (task_mode == \"me\" || task_mode == \"edit_all\"? comment_updater_pattern.replace( new RegExp('%title%'), updater_titles['comment']) : '') );
+							task_table_row_html = task_table_row_html.replace( new RegExp(\"%unassigner%\") , (task_mode == \"my\" || task_mode == \"edit_all\"? unassigner_pattern : ''));
+							if (updater_titles['status'][response[ind]['status']]) 
+								status_updater_html = status_updater_pattern.replace(new RegExp('%title%'), updater_titles['status'][response[ind]['status']]);
+							if (task_table_row_html.indexOf('%status_updater%') != -1) task_table_row_html = task_table_row_html.replace( new RegExp('%status_updater%') , (  (statuses_transforms[task_mode][response[ind]['status']]) ? status_updater_html : '' ));
+							
+							
+							jQuery(task_table_row_html).appendTo('#task_table');
+						}
+						
+					}
+					if (task_mode == 'my' || task_mode == 'edit_all') 
+					{ 
+						jQuery('img[title=\"'+updater_titles['author']+'\"]').parent().addClass('author-update');
+						jQuery('img[title=\"'+updater_titles['executor']+'\"]').parent().addClass('executor-update');
+						jQuery('img[title=\"'+updater_titles['description']+'\"]').parent().addClass('description-update');
+						jQuery('.unassigner').bind('click',  function(e) {  return unassignTask(this)}  );
+						jQuery('.author-update').bind('click',  function(e) {  return changeAuthorName(this)}  );
+						jQuery('.executor-add').bind('click',  function(e) { return changeSubjectName(this, true)}  );
+						jQuery('.executor-update').bind('click',  function(e) {  return changeSubjectName(this, false)}  );
+						jQuery('.description-update').live('click',  function(e) {  return setTimeout(changeDescr(this), 1000)}  );
+					}
+					else if (task_mode == 'me' || task_mode == 'edit_all' ||  task_mode == 'executor_reports')
+					{	jQuery('img[title=\"'+updater_titles['comment']+'\"]').parent().addClass('comment-update');
+						jQuery('.executor-update').removeClass('href');
+						jQuery('.comment-update').bind('click',  function(e) {  changeComment(this);} );
+					}
+					if (jQuery('.status-update')) jQuery('.status-update').bind('click',  function(e) {  updateStatus(this)} );
+					jQuery('#task_table tr:even').filter('[id!=\"task_table_header\"]').css('background', '#E5DDDD');
+					jQuery('#task_table tr:odd').css('background', '#F5EAEA');
+				} 
+				if (!document.getElementById('task_table'))
+					jQuery(no_tasks_msg_pattern).appendTo('#task_table_cont');
+							
+				
+				cur_page = parseInt(tasks_page);
+				if (print_mode) window.print();
+			});
+		}
+	
+	
+		function changeComment(comment_cont)
+		{
+			if (!jQuery(comment_cont).children('textarea').length) 
+			{
+				comment_form = jQuery('<br /><textarea rows=\"10\" onclick=\"event.cancelBubble = true; \">'+jQuery(comment_cont).parent().text().trim()+'</textarea>');
+				jQuery(comment_form).appendTo(comment_cont);
+			}
+			else
+			{	
+				comment_text = jQuery(comment_cont).children('textarea').attr('value');
+				task_id = jQuery(comment_cont).closest('tr').attr('id');
+				var request = {'module': " .$MODULE_OUTPUT['module_id']. ", 'page_uri': '" .$Engine->EngineUri(). "', 'params': 'update_task', 'update_data': {'id': task_id, 'executor_comment' : comment_text} };
+				jQuery.ajax({
+				 	type: 'POST',
+					url: '/ajax_mode/', 
+					data: request,
+					success : function(data) {
+						checkResponse(data);
+						if (data)
+						{
+							jQuery(jQuery(comment_cont).parent().contents()[0]).replaceWith(comment_text);	
+							jQuery(comment_cont).children('br,textarea').remove();
+						}
+					}
+				});
+			}
+		}
+	
+	
+		function changeDescr(descr_updater)
+		{
+			descr_cont = jQuery(descr_updater).parent().get(0);
+			if (!jQuery(descr_cont).children('textarea').length) 
+			{
+				//descr_form = jQuery('<br /><textarea rows=\"10\" onclick=\"event.cancelBubble = true; \">'+jQuery(descr_cont).text()+'</textarea>');
+				descr_form = jQuery('<br /><textarea rows=\"10\" onclick=\"event.cancelBubble = true; \">'+jQuery(descr_cont).html().replace(/<div.+$/, '').replace(/<br>/g, '\\n')+'</textarea>');
+				jQuery(descr_form).appendTo(descr_cont);
+			}
+			else
+			{
+				
+				new_descr = jQuery(descr_cont).children('textarea').attr('value').replace(/\\n/g, '<br>').trim();
+				//new_descr = '<span>'+jQuery(descr_cont).children('textarea').attr('value').replace(new RegExp('\\n', 'ig'), '\\n<br />').trim()+'</span>';
+				//new_descr = jQuery(descr_cont).children('textarea').attr('value').trim();
+				task_id = jQuery(descr_cont).closest('tr').attr('id');
+				var request = {'module': " .$MODULE_OUTPUT['module_id']. ", 'page_uri': '" .$Engine->EngineUri(). "', 'params': 'update_task', 'update_data': {'id': task_id, 'description' : new_descr} };
+				jQuery.ajax({
+					type: 'POST',
+					url: '/ajax_mode/', 
+					data: request,
+					success : function(data) {
+						checkResponse(data);
+						if (data)
+						{
+							var innerDiv = jQuery(descr_cont).find('div');
+							jQuery(descr_cont).children('br,textarea').remove();
+							jQuery(descr_cont).html(new_descr+' ');
+							innerDiv.appendTo(jQuery(descr_cont));	
+						}
+					}
+				});
+			}
+		}
+		
+	
+		function showCalendarField(e, fieldObj)
+		{	
+			e.cancelBubble=true;
+			if (jQuery(fieldObj).attr('class') == 'calendar-field-active')
+			{
+				fieldObj.select();
+				lcs(fieldObj, updateDateFilter);
+			}
+		}
+	
+	
+		function updateDateFilter()
+		{
+			assign_date_from = jQuery('#assign_date_from').attr('value') + time_tail;
+			assign_date_to = jQuery('#assign_date_to').attr('value') + time_tail;
+			reloadTasks(1);
+		}
+		
+		
+		function checkResponse(resp)
+		{
+			if (resp && resp.length && resp != access_denied_msg)
+				return true;
+			else document.location = '';
+		}
+		
+		function updateStatus(updater_obj)
+		{
+			if (task_mode == 'edit_all' && !jQuery(jQuery(updater_obj).parent().siblings().find('a').get(0)).text()) {
+				alert('Для задачи не указано исполнителей.');
+				return;
+			}
+			cur_status_lable = jQuery(updater_obj).parent().text().replace(/^\s+|\s+$/g, '');
+			
+			for (var ind in statuses_lables)
+				if (statuses_lables[ind] == cur_status_lable) 
+				{
+					cur_status = ind;
+					break;	
+				} 
+			
+			new_status = statuses_transforms[task_mode][cur_status]; 
+							if ((task_mode != 'executor_reports') && (new_status == 'tobechecked' && (!(jQuery(updater_obj).parent().parent().find('div.comment-update').parent().text()) || !(jQuery(updater_obj).parent().parent().find('td:last').text().trim().length) ))) {
+				alert('Не заполнено поле комментария.');
+				return;
+			}
+
+			if (new_status == 'current' || new_status == 'done')
+			{	
+				cur_date = new Date();
+				cur_day = cur_date.getDate();
+				cur_year = cur_date.getFullYear();
+				cur_month = cur_date.getMonth();
+				cur_hours = cur_date.getHours();
+				cur_minutes = cur_date.getMinutes();
+				cur_seconds = cur_date.getSeconds();
+				cur_date = cur_year+'-'+(cur_month<10 ? '0'+(cur_month+1) : (cur_month+1))+'-'+ (cur_day<10 ? '0'+cur_day : cur_day)+' '+ (cur_hours<10 ? '0'+cur_hours : cur_hours) + ':' + (cur_minutes<10 ? '0'+cur_minutes : cur_minutes) + ':' + (cur_seconds<10 ? '0'+cur_seconds : cur_seconds);
+	
+				if (new_status == 'current') 
+				{
+					jQuery(updater_obj).find('img').attr('title', updater_titles['status']['current']); 
+					jQuery(updater_obj).parent().parent().find('td.start-date').text(cur_date);
+				}
+				else 	
+					jQuery(updater_obj).parent().parent().find('td.finish-date').text(cur_date);
+			}
+			
+			updateTask({'id': jQuery(updater_obj).parent().parent().get(0).id, 'status': new_status});
+			children = jQuery(updater_obj).parent().children()
+			jQuery(jQuery(updater_obj).parent().contents()[0]).replaceWith(statuses_lables[new_status]);
+			
+			if (!statuses_transforms[task_mode][new_status]) 
+				jQuery(updater_obj).parent().children().remove();
+		}
+	
+	
+		function updatePager(pagerHref)
+		{
+			reloadTasks(jQuery(pagerHref).attr('data-pager_num'));
+		}
+	
+		
+		function addNewTask() 
+		{	
+			//task_executor = document.getElementById('new_task_exec').options[document.getElementById('new_task_exec').selectedIndex].id; 
+			//var request = {'module': " .$MODULE_OUTPUT['module_id']. ", 'params': 'add_task', 'add_data': {'task_author': " .$MODULE_OUTPUT["id"]. ", 'task_executor': task_executor, 'task_descr': document.getElementById('new_task_descr').value} };
+			//task_author = document.getElementById('new_task_auth').options[document.getElementById('new_task_auth').selectedIndex].id;
+			task_author = document.getElementById('new_task_auth').value;
+			
+			task_descr = document.getElementById('new_task_descr').value;
+			
+			replaceSyms = {  '&#160;&#8223;': /\s\"/,  '&ldquo;': /\"/, '&#8219;': /'/,  '&lsquo;': /'/, '<br />': /\\n/g};
+			for (var sym in replaceSyms)
+				task_descr = task_descr.replace( replaceSyms[sym], sym);
+			
+			if (!task_author || !task_descr)
+				alert('Необходимо заполнить оба поля.');
+			else 
+			{
+				var request = {'module': " .$MODULE_OUTPUT['module_id']. ", 'page_uri': '" .$Engine->EngineUri(). "', 'params': 'add_task', 'add_data': {'task_author': task_author, 'task_descr': task_descr} };
+				
+				jQuery.ajax({
+				    type: 'POST',
+					url: '/ajax_mode/', 
+										
+					data: request,
+					success: function( data ) {
+						checkResponse(data);
+						displayAjaxMsg(data, document.getElementById('add_task_msg_box'));
+						reloadTasks(cur_page);	    	
+						jQuery('#new_task_descr').attr('value', '');
+						jQuery('#new_task_auth').attr('value', '');
+				 	}
+				});
+			}
+		}
+
+		
+		function unassignTask(unassigner_obj)
+		{
+			task_id = jQuery(unassigner_obj).parent().parent().attr('id');
+			if (task_id)
+			{
+				var request = {'module': " .$MODULE_OUTPUT['module_id']. ", 'page_uri': '" .$Engine->EngineUri(). "', 'params': 'unassign_task', 'unassign_data': {'id': task_id} };
+				jQuery.ajax({
+				 	type: 'POST',
+					url: '/ajax_mode/', 
+					data: request,
+					success: function( data ) {
+						checkResponse(data);
+						jQuery(unassigner_obj).parent().parent().remove();
+						alert(data);
+					}
+				});
+			}
+		}
+		
+		
+		function updateTask(update_data)
+		{
+			if (update_data.id)
+			{	
+				var request = {'mode': 'json', 'module': " .$MODULE_OUTPUT['module_id']. ", 'page_uri': '" .$Engine->EngineUri(). "', 'params': 'update_task', 'update_data': update_data };
+							
+				jQuery.getJSON('/ajax_mode/', request, 
+					function(response) {
+					
+						if (checkResponse(response)) {
+							for (var ind in response)
+								if (response[ind]['responseData']) {
+									if (response[ind]['responseData']['id'] && response[ind]['responseData']['assignment_date']) {
+										jQuery('#'+response[ind]['responseData']['id']).find('.start-date').html(response[ind]['responseData']['assignment_date'])
+										
+									}
+								}
+						}
+							
+					}
+				);
+				
+			}
+		}
+
+		
+		function updateTaskExecutors(update_data)
+		{
+			if (update_data.task_id)
+			{	
+				var request = {'mode': 'json', 'module': " .$MODULE_OUTPUT['module_id']. ", 'page_uri': '" .$Engine->EngineUri(). "', 'params': 'update_executors', 'update_data': update_data };
+							
+				jQuery.getJSON('/ajax_mode/', request, 
+					function(response) {
+						if (checkResponse(response)) {
+							
+							for (var ind in response) {
+								
+								if (response[ind]['responseData']) {
+									if (response[ind]['responseData']['id'] && response[ind]['responseData']['assignment_date']) {
+										jQuery('#'+response[ind]['responseData']['id']).find('.start-date').html(response[ind]['responseData']['assignment_date'])
+										
+									}
+								}
+							}
+						}
+					}
+				);
+			}
+		}
+		
+		function changeElemDisplay(elemId, iter)
+		{ 
+			jQuery('#'+elemId).css('display', (jQuery('#'+elemId).css('display') != 'none' ? 'none' : 'inline-block'));
+			if (iter<5) setTimeout('changeElemDisplay(\"'+elemId+'\",'+(iter+1)+')', (jQuery('#'+elemId).css('display') == 'none'  ? 500 : 1000 ));
+		}
+		
+		
+		function displayAjaxMsg(msg, cont)
+		{
+			cont.innerHTML = '('+msg+')';
+			setTimeout('changeElemDisplay(\"'+cont.id+'\", 0)',500);
+		}
+	
+	var statusesStr = '".(is_array($MODULE_OUTPUT['task_statuses']) ? implode(';', $MODULE_OUTPUT['task_statuses']) : $MODULE_OUTPUT['task_statuses'])."';
+	
+	jQuery(document).ready(function() { 
+		var serviceKeyPressed = false;
+		if ('#new_task_form') {
+			jQuery(document).bind('keyup', function (event) { 
+				if ( event.which == 16 || event.which == 17 ) {
+					serviceKeyPressed = false;
+				}
+			});
+			jQuery(document).bind('keydown', function (event) { 
+				if ( event.which == 16 || event.which == 17 ) {
+					serviceKeyPressed = true;
+				}
+				if ( event.which == 45 && !serviceKeyPressed) {
+					event.preventDefault();
+					changeAddTaskTableDisplay();   			
+   				}
+   			});
+		}; 
+		jQuery('#filters_cont input').each(function () { if (statusesStr.indexOf(jQuery(this).data('status')) != -1) jQuery(this).attr('checked', true)});
+		jQuery('.status-update :first-child').each(function() { jQuery(this).attr('title', updater_titles['status'][jQuery(this).parent().attr('data-status')])}); 
+		jQuery('.descr-update :first-child').attr('title', updater_titles['description']);
+		jQuery('.executor-update :first-child').attr('title', updater_titles['executor']);
+		jQuery('.author-update :first-child').attr('title', updater_titles['author']);
+		jQuery('.pager-href').bind('click', function() { reloadTasks(jQuery(this).attr('data-pager_num'))});
+
+		if (window.location.hash) {
+			
+				jQuery('#executors_list option[id='+window.location.hash.substr(1)+']').attr('selected', true);
+				jQuery('#print_report_href').attr('href', jQuery('#print_report_href').attr('href')+'print/'+window.location.hash);
+				showExecutorTasks(window.location.hash.substr(1));
+			
+		}		
+	});	
+	</script>
+";
+/*if ($MODULE_OUTPUT != "acc_denied")
+	$EE["head_extra3"][] = $head_Extra;*/
+
+
+?>

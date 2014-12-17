@@ -1,0 +1,1017 @@
+html
+{
+    height: 100%;
+}
+
+body
+{
+    background: #ffffff url(/themes/images/backgroung_left.gif) repeat-y;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font:  10pt 'Arial';
+    //position: relative;    
+}
+
+h1
+{
+    text-transform: uppercase;
+    color: #5b0100;
+    font-size: 14pt;
+    font-weight: bold;
+    padding: 0;
+    margin: 0;
+}
+
+h2
+{
+    color: #5b0100;
+    font-size: 13pt;
+    font-weight: bold;
+    padding: 0;
+    margin: 1em 0 0 0;    
+}
+
+h3
+{
+    color: #000000;
+    font-size: 13pt;
+    font-weight: normal;
+    padding: 0;
+    margin: 2px;    
+}
+
+h4
+{
+    color: #000000;
+    font-size: 12pt;
+    font-weight: normal;
+    padding: 0;
+    margin: 2px;    
+}
+
+h5
+{
+    color: #000000;
+    font-size: 11pt;
+    font-weight: bold;
+    padding: 0;
+    margin: 0;    
+}
+
+h6
+{
+    color: #000000;
+    font-size: 10pt;
+    font-weight: bold;
+    padding: 0;
+    margin: 0;    
+}
+
+a
+{
+    color: #804812;
+    text-decoration: none;
+}
+
+a.dash
+{
+	text-decoration: none;
+    display: inline-block;
+    border-bottom: 1px dashed;
+}
+
+a:hover.dash
+{
+	text-decoration: none;
+	cursor:pointer;
+}
+
+#submenu a
+{
+    color: #e1a265;
+}
+
+a:hover
+{
+    text-decoration: underline;
+}
+
+a.active
+{
+    font-weight: bold;
+    text-decoration: underline;    
+}
+
+span.user_inactive
+{
+	color: #777;
+}
+
+#submenu a.active
+{
+    font-weight: normal;
+}
+
+img
+{
+    border: 0;
+}
+
+a img, a:hover img
+{
+	text-decoration: none;
+}
+
+.pusher
+{
+    clear: both;
+}
+
+
+#left
+{
+    width: 220px;
+    height: 100%;
+    float: left;
+    padding: 0;
+    margin: 0;  
+    position: relative;
+    z-index: 2;
+}
+
+#content-wrapper
+{
+    float: left;
+    width: 100%;
+    margin-left: -220px;
+    overflow: hidden;
+}
+
+
+#right
+{
+    padding: 0;
+    margin: 0;
+    margin-left: 220px;
+    overflow: hidden;
+    color: #000000;
+}
+
+#submenu
+{
+    background: #5b0100;
+    color: #ffffff;
+    min-height: 500px;
+    overflow:hidden;
+    height:expression(this.scrollHeight < 500? "500px" : "auto");
+    padding-left: 5px;
+    margin-right: 5px;
+}
+
+#submenu ul.main li ul {
+    display: none;
+}
+#submenu ul.main li.active ul {
+    display: block !important;
+}
+
+#nsau, #top
+{
+    height: 156px;
+    border-bottom: #ffffff solid 4px;
+}
+
+#nsau
+{
+    position: relative;
+    background: #5b0100;  
+	border-right: #fff solid 4px;
+    width: 216px;
+    padding: 0;
+    margin: 0;
+}
+
+#top
+{
+    background: #5b0100 url(/themes/images/main_building.gif) left no-repeat;
+    padding: 0;
+    position: relative;
+}
+
+
+#menu
+{
+    position: absolute;
+    left: 267px;
+    right: 10px;
+    color: #ffffff;
+    padding-bottom: 10px;
+    bottom: 0;
+}
+
+#top_bg {
+	position: relative;
+	height: 156px;
+	background: url("/themes/images/snow.gif") left top no-repeat;
+}
+
+* html #menu  /* код только для IE версии 6 и ниже */
+{
+    //left: 250px;
+}
+
+#menu ul
+{
+    margin: 0;
+    padding: 0;
+}
+#menu li
+{
+    float: left;
+    margin-left: 1em;
+    padding-left: 0;
+    font-size: 11pt;
+    list-style: none; 
+}
+
+#right ul, ul li
+{
+    list-style: none;
+}
+
+#content
+{
+    background: #ffffff url(/themes/images/background.gif) repeat-x;
+    min-height: 500px;
+    overflow:hidden;
+    height:expression(this.scrollHeight < 500? "500px" : "auto");
+    padding: 10px;
+    //padding-bottom: 50px;
+}
+
+#content ul li
+{
+	list-style: disc;
+}
+
+
+#top a
+{
+    color: #ffffff;
+}
+
+.big
+{
+    font-size: 20pt;
+}
+
+.small
+{
+    font-size: 14pt;
+}
+
+.big, .small
+{
+    color: #ffffff;
+    text-transform: uppercase;
+}
+
+#nsau p
+{
+    color: #ffffff;
+    margin: 0;
+    padding: 0;
+    text-transform: uppercase;
+    position: relative;
+    vertical-align: middle;
+}
+
+#pp
+{
+    position: absolute;
+    bottom : 0;
+    left: 10px;
+    height : 126px;   
+    padding: 0;
+    margin: 0;
+} 
+
+.button
+{
+    height: 25px;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 8pt;
+    background-color: #5b0100;
+}
+/*--------------Форма добавления группы--------------*/
+#new_group_name, #group_year {
+	float: left;
+	margin: 10px 20px 10px 0;
+}
+#new_group_name div {
+	float: left;
+}
+#group_year select {
+	padding-top: 1px;
+	padding-bottom: 1px;
+}
+#group_faculties {
+	clear: both;
+}
+/*---------------------------------------------------*/
+
+#nofooter
+{
+    min-height: 100%;
+    margin-bottom: -54px;
+	min-width: 1000px;
+}
+
+* html #nofooter /* MSIE 6 */
+{
+    height: 100%;
+}
+
+#footer-pusher
+{
+    height: 60px;
+    //position: absolute;
+    clear: both;
+}
+
+#footer
+{
+    height: 53px;
+    padding-left: 10px;
+    position: relative;
+    overflow: hidden;
+    bottom: 0;
+}
+
+#counters
+{
+	padding-left: 10px;
+}
+
+#copyright
+{
+    margin-left: 220px;
+}
+
+
+
+#leftright
+{
+    padding-right:1px;    
+}
+
+#left-block
+{
+    float: left;
+    margin-right: 2%;
+    width: 35%;
+    text-align: left;
+    overflow-x: hidden;
+    
+}
+
+#right-block
+{
+    float: left;
+    width: 63%;        
+    margin-top: 0;
+    text-align: justify;
+    overflow: hidden;    
+}
+
+
+* html #news  /* код только для IE версии 6 и ниже */
+{
+    margin-right: 1%;
+}
+
+#left-block h2, #right-block h2
+{
+    font-weight: bold;
+    font-size: 12pt;
+    text-transform: uppercase;    
+    border-bottom: 2px solid #511b34;
+    border-width: 100%; 
+    color: #5b0100;
+}
+
+#right-block h2
+{
+    //margin-bottom: 20px;
+} 
+
+#left-block ul, #right-block ul
+{
+    margin: 0;
+    padding: 0;
+}
+
+#left-block li, #right-block li
+{
+    font-weight: normal;
+    list-style: none;    
+}
+
+.float-left
+{
+    float: left;
+    margin-right: 1em;
+}
+
+.float-right
+{
+    float: right;
+    margin-left: 1em;
+}
+
+
+ 
+/* Новости */
+ 
+
+
+.news_date
+{
+    margin-bottom: 0;
+    font-weight: bold;    
+}
+
+.news_text
+{
+    margin-top: 0;    
+}
+
+.news_block {
+	padding-bottom: 1em;
+}
+.news_block h2 {
+	margin-top: 0;
+}
+
+.col
+{
+    line-height: 1;
+	overflow: hidden;
+}
+
+/*Система управления задачами*/
+
+.calendar-field
+{
+	width: 70px;
+	filter:progid:DXImageTransform.Microsoft.Alpha(opacity=70);
+	opacity: 0.7;
+}
+
+.calendar-field-active
+{
+	width: 70px;
+	filter:progid:DXImageTransform.Microsoft.Alpha(opacity=100);
+	opacity: 1;
+}
+
+div.href 
+{
+	color: #9c0605; 
+	cursor:pointer;
+	display: inline;
+}
+
+td.href 
+{
+	color: #00a000; 
+	cursor:pointer;
+}	
+
+div.href.active
+{
+	text-decoration: underline;
+}
+
+div.title 
+{
+	font-size: 13pt;
+}
+
+
+/* Закачка файлов */
+
+#demo-list {
+    padding: 0;
+    list-style: none;
+    margin: 0;
+}
+ 
+#demo-list .file-invalid {
+    cursor: pointer;
+    color: #514721;
+    padding-left: 48px;
+    line-height: 24px;
+    background: url(assets/error.png) no-repeat 24px 5px;
+    margin-bottom: 1px;
+}
+#demo-list .file-invalid span {
+    background-color: #fff6bf;
+    padding: 1px;
+}
+ 
+#demo-list .file {
+    line-height: 2em;
+    padding-left: 22px;
+    background: url(assets/attach.png) no-repeat 1px 50%;
+}
+ 
+#demo-list .file span,
+#demo-list .file a {
+    padding: 0 4px;
+}
+ 
+#demo-list .file .file-size {
+    color: #666;
+}
+ 
+#demo-list .file .file-error {
+    color: #8a1f11;
+}
+ 
+#demo-list .file .file-progress {
+    width: 125px;
+    height: 12px;
+    vertical-align: middle;
+    background-image: url(../../assets/progress-bar/progress.gif);
+}
+
+
+
+.timetable, .right_timetable, .graphics_table
+{    
+    border-collapse: collapse;
+    border: 1px solid #5a5a5a;
+    margin-bottom: 10px;
+}
+
+.right_timetable
+{
+    float: right;
+}
+
+.graphics_table
+{
+    font-size:8pt;
+}
+
+.current_day
+{
+    background: #f9dfc5;
+}
+
+.timetable td, .timetable th, .right_timetable th, .right_timetable td, .graphics_table td, .graphics_table th
+{
+    border-left: 1px solid #5a5a5a;
+    border-bottom: 1px solid #cccccc;
+}
+
+th.groups
+{
+    width: 15px;
+}
+
+.table_top
+{
+    background: #5b0100;
+    // background: #46142b;
+    color: #fff;
+}
+
+th a
+{
+    color: #fff;
+}
+
+.week_day
+{
+    background: #eeeeee;
+}
+
+
+div.right_table
+{
+    float: right;
+    width: 400px;
+}
+
+#subgr {
+	text-transform: lowercase;
+	
+}
+
+#timetable_div
+{
+    min-width: 900px;
+}
+
+.div1
+{
+    margin-bottom: 10px;
+}
+
+.div2
+{
+    width: 60px;
+    float: left;
+    text-align: center;
+}
+
+#div3
+{
+    float: left;
+}
+
+.div1 h2, .div1 h3
+{
+    padding: 0;
+    margin: 0;
+    //font-weight: normal; 
+}
+
+.div1 h2
+{
+    color: #511b34;
+}
+
+
+#submenu ul.main
+{
+    list-style: none;
+    padding-left: 0;
+    margin-left: 0;
+}
+
+#submenu ul.main ul
+{    
+    list-style: none;
+    padding-left: 0;
+    margin-left: 1em;
+}
+
+/* Сообщения системы */
+.message
+{
+    font-weight: bold;
+}
+
+.red
+{
+    color: #ff0000;
+}
+
+/* Обратная связь */
+
+.gorod
+{
+    display: none;
+}
+
+.vert
+{
+    word-mode: tb-rl;
+}
+
+/* Формы */
+
+.input_long
+{
+	width: 400px;
+}
+
+/*CSS for Bubble Tooltips by Alessandro Fulciniti
+- http://pro.html.it - http://web-graphics.com */
+
+.tooltip{
+width: 200px; color:#000;
+font:lighter 11px/1.3 Arial,sans-serif;
+text-decoration:none;text-align:center}
+
+.tooltip span.top{padding: 30px 8px 0;
+    background: url(/themes/images/bt.gif) no-repeat top}
+
+.tooltip b.bottom{padding:3px 8px 15px;color: #548912;
+    background: url(/themes/images/bt.gif) no-repeat bottom}
+
+/* tablesort */
+
+
+th.sortable,
+th.sortable-text,
+th.sortable-date,
+th.sortable-keep,
+th.sortable-date-dmy,
+th.sortable-numeric,
+th.sortable-currency,
+th.sortable-sortByTwelveHourTimestamp,
+th.sortable-sortIPAddress,
+th.sortable-sortEnglishLonghandDateFormat,
+th.sortable-sortScientificNotation,
+th.sortable-sortImage,
+th.sortable-sortFileSize,
+th.sortable-sortAlphaNumeric,
+th.sortable-sortEnglishDateTime
+
+        {
+        cursor:pointer;
+        background: #CAE8EA url(../media/bg_header_sortable.jpg) no-repeat;
+        padding: 8px 12px 4px 16px;
+        }
+th.forwardSort
+        {
+        background:#CAE8EA url(../media/bg_header_down.jpg) no-repeat 0 0;
+        }
+th.reverseSort
+        {
+        background:#CAE8EA url(../media/bg_header_up.jpg) no-repeat 0 0;
+        }
+table thead th.forwardSort a,
+table thead th.reverseSort a
+        {
+        color:#000;
+        text-decoration:none;
+        }
+body.sort-active *
+        {
+        cursor:wait;
+        }
+
+/*  События в левой колонке на главной  */
+.event
+{
+	margin-top: 10px;
+	min-height: 80px;
+	-height: 80px; /* Для ie6 */
+/*	border: 1px solid red;*/
+}
+
+.event p
+{
+	margin: 0;
+	padding: 0;
+}
+/* Стандартные формы */
+.hint
+{
+	color: #ff0000;
+	font-weight: bold;
+}
+
+/* Вопрос-ответ */
+.author
+{
+	color: #5b0100;
+	font-weight: bold;
+	font-style: normal;
+	margin-bottom: 0;
+	padding-bottom: 0;
+}
+.response p, .post
+{
+	font-style: italic;
+	font-size: 12pt;
+	margin-top: 0.5em;
+}
+.response
+{
+	padding: 0.5em;
+/*	border: 1px solid grey;*/
+	background-color: #f9dfc5;
+	/*border-radius: 5px;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;*/
+}
+
+.aggregate
+{
+	border-bottom: 1px dashed #804812;
+	margin: 0.5em 0;
+	padding: 0.5em;
+/*	border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;*/
+}
+
+
+/* Стили для контента */
+
+th.head
+{
+	background-color: #f9dfc5;
+}
+
+
+/* Для подтверждения почты */
+.apply_example {
+	border-bottom: 1px dotted;
+}
+
+.apply_example:hover {
+	text-decoration: none;
+	cursor: pointer;
+}
+/*============================================================================*/
+.sort_list {
+	margin: 5px 0;
+	clear: both;
+	height: 16px;
+}
+.sort_list ul {
+	margin: 0;
+	padding: 0;
+	list-style: none !important;
+}
+.sort_list ul li {
+	list-style: none !important;
+	float: left;
+	margin-right: 5px;
+}
+.sort_list ul li#by_time {
+	width: 54px;
+}
+.sort_list ul li#by_alf {
+	width: 84px;
+}
+fieldset legend {
+	font-size: 13px;
+}
+/*--------------------------Банет в шапке-------------------------------------*/
+#header_baner {
+	position: absolute;
+	top: 30px;
+	right: 20px;
+	z-index: 100;
+}
+#header_baner a {
+	width: 468px;
+	height: 60px;
+	display: block;
+}
+#header_baner a img {
+	
+}
+/*-------------------------Перетаскивание разделов----------------------------*/
+.sortable_li {
+	position: relative;
+}
+.sortable_li li {
+	position: relative;
+}
+.js_move li {
+	cursor: move;
+}
+.sortable_li li em.load {
+	position: absolute;
+	top: -4px;
+	left: -52px;
+	padding-left: 32px;
+	padding-top: 22px;
+	background: url("../images/loading.gif") center center no-repeat;
+	display: none;
+}
+.sortable_li li.ui-state-highlight {
+	height: 30px;
+	background: rgb(230, 230, 230);
+}
+/*--------------------------Сортировка файлов по папкам-----------------------*/
+.bayan a {
+	padding-top: 2px;
+}
+.bayan a.open {
+	background: url("../images/folder_open.png") right no-repeat;
+	padding-left: 2px;
+	padding-right: 25px;
+}
+.bayan a.close {
+	padding-right: 23px;
+	background: url("../images/folder_close.png") right no-repeat;
+}
+#content .bayan li {
+	list-style: none;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.bayan li .load_f {
+	margin-left: -1px;
+	padding-left: 22px;
+	background: url("../images/download_file.png") left no-repeat;
+}
+/*----------------------------------------------------------------------------*/
+.modal_box {}
+#abit_table ul {
+	margin-top: 0;
+}
+
+#privyazka select {
+	width: 300px;
+}
+
+#daystogo {
+	position: absolute;
+	width: 41px;
+	height: 49px;
+	right: 0;
+	background-image: url(../../images/calendar.jpg);
+	background-position: center top;
+	padding: 30px;
+	text-align: center;
+}
+
+#daystogo a {
+	text-decoration: none;
+}
+
+#daystogo span {
+	position: relative;
+	color: #4e2f2c;
+	text-align: center;
+	font-family: Times New Roman, serif;
+}
+
+#daystogo #numb {
+	top: 4px;
+	left: 2px;
+	font-size: 34pt;
+	font-weight: bold;
+}
+
+#daystogo #days {
+	top: -10px;
+	left: 2px;
+	font-size: 16pt;
+}
+
+span#tillend {
+	position: relative;
+	float: right;
+	text-align: right;
+	right: 100px;
+	font-size: 12pt;
+	top: 40px;
+	color: #fff;
+}
+
+#cit_scheme {
+	float: left;
+	width: 632px;
+	height: 301px;
+	background-image: url(http://nsau.edu.ru/images/cit-scheme_1.gif);
+	background-repeat: no-repeat;
+}
+
+#cit_scheme div {
+	position: relative;
+	cursor: pointer;
+}
+
+#cit_scheme div#prorector {
+	position: relative;
+	top: -16px;
+	width: 628px;
+	height: 45px;
+}
+
+#cit_scheme div#director {
+	position: relative;
+	top: 13px;
+	width: 628px;
+	height: 45px;
+}
+
+#cit_scheme div.departs {
+	float: left;
+	top: 45px;
+	width: 120px;
+	height: 150px;
+	margin-left: 7px;
+}
+
+#cit_scheme div.departs#d1 {
+	margin-left: 0;
+}
+
+/* calendar */
+.datepicker { border-collapse: collapse; border: 2px solid #999; position: absolute; z-index:1000}
+.datepicker tr.controls th { height: 22px; font-size: 11px; }
+.datepicker select { font-size: 11px; }
+.datepicker tr.days th { height: 18px; }
+.datepicker tfoot td { height: 18px; text-align: center; text-transform: capitalize; }
+.datepicker th, .datepicker tfoot td { background: #eee; font: 10px/18px Verdana, Arial, Helvetica, sans-serif; }
+.datepicker th span, .datepicker tfoot td span { font-weight: bold; }
+
+.datepicker tbody td { width: 24px; height: 24px; border: 1px solid #ccc; font: 11px/22px Arial, Helvetica, sans-serif; text-align: center; background: #fff; }
+.datepicker tbody td.date { cursor: pointer; }
+.datepicker tbody td.date.over { background-color: #99ffff; }
+.datepicker tbody td.date.chosen { font-weight: bold; background-color: #ccffcc; }

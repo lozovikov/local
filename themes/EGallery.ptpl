@@ -1,0 +1,227 @@
+<?php
+// version: 3.5.8
+// date: 2013-09-27
+global $Engine, $Auth, $EE;
+
+if(isset($MODULE_OUTPUT['scripts_mode'])) {
+	switch($MODULE_OUTPUT['scripts_mode']) {
+
+		case 'gallery_multiupload': {
+			$timestamp = time();
+			$EE["head_extra3"][] = "
+				<script src='/scripts/jquery/jquery-1.7.2.min.js' type='text/javascript'></script>
+				<script src='/scripts/uploadify/jquery.uploadify.min.js' type='text/javascript'></script>
+				<link rel='stylesheet' type='text/css' href='/scripts/uploadify/uploadify.css'>
+				
+				<script type='text/javascript'>
+					jQuery(document).ready(
+						function($) {
+			
+			
+						InitMultiUploader = function(upload_form_id, settings = false) {
+							
+							var uploader = {
+								uploadStarter: null,
+								uploadForm: null,
+								settings: {},
+								
+								init: function(form_id) {
+									this.uploadForm =  $('#'+form_id);
+									this.uploadStarter = $('#'+form_id).find('input[type=file]');
+									if (settings) 
+										this.initSettings(settings);
+									this.uploadStarter.uploadify({
+										'buttonText': 'ֲûבונטעו פאיכû',
+										'formData'     : {
+											'folder': '/images/gallery/',
+											'timestamp' : '".$timestamp."',
+											'token'     : '".md5('unique_salt' . $timestamp)."'
+										},
+										'swf'      : '/scripts/uploadify/uploadify.swf',
+										'uploader' : '/galereya_test/',
+										'onUploadStart' : function(file) {
+											uploader.updateUploadForm();
+											/*$('#'+uploader_elem_id).uploadify('settings', 'formData', {'".$NODE_ID."[add_item][pos]': $('#upload_form_file_pos').val()});
+											$('#'+uploader_elem_id).uploadify('settings', 'formData', {'".$NODE_ID."[add_item][section_id]': $('#upload_form_file_section_id').val()});
+											$('#'+uploader_elem_id).uploadify('settings', 'formData', {'".$NODE_ID."[add_item][descr]': $('#upload_form_file_descr').val()});
+											$('#'+uploader_elem_id).uploadify('settings', 'formData', {'".$NODE_ID."[add_item][text]': tinyMCE ? tinyMCE.activeEditor.getContent() : ''});
+									        */
+									        },
+										'onQueueComplete' : function(file) {
+											document.location.href = '".$EE['unqueried_uri']."';
+										},
+										'onClearQueue' : function(queueItemCount) {
+											document.location.href = '".$EE['unqueried_uri']."';
+										} 
+									});		
+								},
+															
+								initSettings:	function(settings) {
+									if (settings.cancelElem) {
+										$('#'+settings.cancelElem).click( 
+											function() {
+												uploader.cancelUpload();
+											} 
+										);
+									}
+									this.settings = settings;
+								},
+								
+								cancelUpload:  function() {
+									this.uploadStarter.uploadify('cancel','*');
+								},
+								
+								updateUploadForm: function() {
+									var formData = {};
+									var elems = this.settings.postElems;
+									if (elems) {
+										for (ind in elems)
+											if (typeof elems[ind] == 'object') {
+												for (ind2 in elems[ind])
+													if (typeof elems[ind][ind2] == 'function') {
+														formData[ind2] = (elems[ind][ind2])();
+													}
+											} else {
+												formData[elems[ind]] = this.uploadForm.find('[name="."\""."'+elems[ind]+'"."\""."]').val();
+											} 
+											
+									} else {
+										this.uploadForm.find('[name][type!=file]').each(
+											function() {
+												formData[this.name] = this.value;
+											}
+										);
+									}
+									this.uploadStarter.uploadify('settings', 'formData', formData);
+								}	
+								
+							}
+							
+							uploader.init(upload_form_id, settings);
+							
+						}
+			
+												
+						
+						
+					});
+					
+				</script>
+			";
+		}
+		break;
+
+		case 'idpo_announce': {
+			$EE["head_extra3"][] = <<<END
+	<script type="text/javascript">
+		jQuery(document).ready(function($) {
+			IDPOGallery = function(moduleId) {
+				if($('.gallery_animate_announce ul').length) {
+					var conteyners = $('.gallery_animate_announce');
+					var randNum;
+					var randNumOld;
+					getRandomInt = function (min, max) {
+						randNum = Math.floor(Math.random() * (max - min + 1)) + min;
+						if(randNum == randNumOld) getRandomInt(min, max);
+						randNumOld = randNum;
+						return randNum;
+					}
+					ZoomUp = function (item) { 
+						//if(!Modernizr.csstransitions) {
+							if(!item.find('a').hasClass('hover')) {
+								//item.find('em').css({'opacity':'0.4'});
+								item.find('em').stop().animate({'opacity':'0.0'}, 300, 'swing');
+								//item.find('a').animate({'left':'-25%','width':'150%','top':'-25%','height':'150%'}, 300, 'swing', function() {
+									item.addClass('active');
+								//});
+							};
+						/*} else {
+							item.addClass('active');
+						};*/
+					};
+					ZoomDown = function (item) { 
+						//if(!Modernizr.csstransitions) {
+							if(!item.find('a').hasClass('hover')) {
+								item.find('em').stop().animate({'opacity':'0.4'}, 300, 'swing');
+								//item.find('a').animate({'left':'0%','width':'100%','top':'0%','height':'100%'}, 300, 'swing', function() {
+									item.removeClass('active');
+								//});
+							};
+						/*} else {
+							item.removeClass('active');
+						};*/
+					};
+					AnimateView = function(conteyner) {
+						//var item_count = conteyner.find('li').length;
+						//var current_new = getRandomInt(0, item_count-1);
+						ZoomDown(conteyner.find('li.active'));
+						ZoomUp(conteyner.find('li:eq('+getRandomInt(0, conteyner.find('li').length-1)+')'));
+					};
+					InitView = function(conteyner) {
+						//if(!Modernizr.csstransitions) {
+							conteyner.find('li em').css({'opacity':'0.4'});
+							conteyner.find('li a').css({'left':'0%','width':'100%','top':'0%','height':'100%'});
+							conteyner.find('li a').mouseenter(function() {
+								//$(this).find('em').css({'opacity':'0.4'});
+								//$(this).css({'left':'0%','width':'100%','top':'0%','height':'100%'});
+								$(this).find('em').stop().animate({'opacity':'0.0'}, 300, 'swing');
+								$(this).stop().animate({'left':'-25%','width':'150%','top':'-25%','height':'150%'}, 300, 'swing');
+								$(this).addClass('hover');
+							}).mouseleave(function() {
+								$(this).find('em').stop().animate({'opacity':'0.4'}, 300, 'swing');
+								$(this).stop().animate({'left':'0%','width':'100%','top':'0%','height':'100%'}, 300, 'swing');
+								$(this).removeClass('hover');
+							});
+						//};
+						setTimeout(function() {
+							AnimateView(conteyner);
+							setTimeout(arguments.callee, 2000);
+						}, 2000);
+					};
+					conteyners.each(function() {
+						InitView($(this));
+					});
+				};
+			};
+		});
+	</script>
+END;
+		}
+		break;
+		case "edit_section": 
+		case "add_section": {
+			$EE["head_extra3"][] = <<<END
+	<script type="text/javascript">
+		jQuery(document).ready(function($) {
+			translit_title = function(str, id) {
+					var uri_part = '';
+					var latinizedSymbs = {'א':'a', 'ב':'b', 'ג':'v', 'ד':'g', 'ה':'d', 'ו':'e', '¸':'yo', 'ז':'zh', 'ח':'z',
+					'ט':'i', 'י':'j', 'ך':'k', 'כ':'l', 'ל':'m', 'ם':'n', 'מ':'o', 'ן':'p', 'נ':'r', 'ס':'s',
+					'ע':'t', 'ף':'u', 'פ':'f', 'ץ':'kh', 'צ':'c', 'ק':'ch', 'ר':'sh', 'ש':'sch', 'ת':'', 'û':'y', 
+					'ü':'', '‎':'e', '‏':'yu', 'ÿ':'ya', ' ':'-', '-':'-', '_':'_', '0':'0', '1':'1', '2':'2',
+					'3':'3', '4':'4', '5':'5', '6':'6', '7':'7', '8':'8', '9':'9', 'a':'a', 'b':'b', 'c': 'c',
+					'd':'d', 'e':'e', 'f':'f', 'g':'g', 'h':'h', 'i':'i', 'j':'j', 'k':'k', 'l':'l', 'm':'m',
+					'n':'n', 'o':'o', 'p':'p', 'q':'q', 'r':'r', 's':'s', 't':'t', 'u':'u', 'v':'v', 'w':'w', 'x':'x', 'y':'y', 'z':'z'};
+					
+					for(var i = 0; i < str.length; i++) {
+						var char = str[i].toLowerCase();
+						if(latinizedSymbs[char]) uri_part += latinizedSymbs[char];
+					}
+					
+					//console.log(uri_part);
+					$('#'+id).val(uri_part);
+			}
+			$('#section_title').keyup(function(e){
+					var section_title = $(this).val();					
+					translit_title(section_title, 'uri_part');
+			});
+			$('#section_title').change(function(e){
+					var section_title = $(this).val();					
+					translit_title(section_title, 'uri_part');
+			});
+		}); 
+	</script>
+END;
+		}
+	}
+} ?>

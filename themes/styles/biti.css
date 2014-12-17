@@ -1,0 +1,213 @@
+body.biti {
+	color: #004c40;
+}
+a {
+	color: #ff3d03;
+}
+#page_title {
+	position: absolute;
+	top: 55px;
+	left: 0;
+	font-size: 24px;
+	color: #004c40;
+	width: 100%;
+	text-transform: uppercase;
+	text-align: center;
+	z-index: 10;
+}
+	#page_title div {
+		margin: 0 220px 0 290px;
+	}
+#logo_biti {
+	position: absolute;
+	top: -36px;
+	right: -130px;
+	width: 142px;
+	height: 71px;
+	background: url("../images/logo_biti1.gif") no-repeat;
+	/*background: url("../images/logo_biti.png") left center no-repeat;*/
+}
+/*----------------------------------------------------------------------------*/
+#header #header_menu {
+	width: auto;
+	margin-right: 86px;
+	background: #127e6a url("../images/line_left_biti.jpg") left top no-repeat;
+}
+	#header #header_menu ul {
+		background: none;
+		padding: 0 20px 10px 20px;
+	}
+	#header #header_menu #menu_left_bg {
+		width: 460px;
+		background: url("../images/line_right_biti1.jpg") no-repeat;
+	}
+	#header #header_menu #gray_line {
+		position: absolute;
+		height: 22px;
+		width: 100%;
+		top: -26px;
+		left: 0;
+		overflow: hidden;
+		background: #c5c6c6 url("../images/biti_gray_line_bg.jpg") top left no-repeat;
+	}
+		#header #header_menu #gray_line div {
+			position: relative;
+			height: 22px;
+			width: 22px;
+			float: right;
+			background: url("../images/biti_gray_line_bg.jpg") bottom left no-repeat;
+		}
+/*----------------------------------------------------------------------------*/
+#header #login_search {
+	bottom: 38px;
+}
+	#header #login_search .retrieve {
+		display: none;
+	}
+/*----------------------------------------------------------------------------*/
+.biti .left_cont .submenu {
+	background: #ebebeb;
+	padding: 13px 10px 30px 30px;
+	margin: 0;
+	-moz-border-radius: 4px; 
+	-webkit-border-radius: 4px; 
+	-khtml-border-radius: 4px; 
+	border-radius: 4px;
+	box-shadow: 10px 10px 10px 1px #CCCCCB;
+	overflow: hidden;
+}
+	.biti .left_cont .submenu .corner_TL,
+	.biti .left_cont .submenu .corner_TR,
+	.biti .left_cont .submenu .corner_BL,
+	.biti .left_cont .submenu .corner_BR {
+		position: absolute;
+		height: 5px;
+		width: 5px;
+		overflow: hidden;
+		background: url("../images/shadow_urfak.gif") -6px -6px no-repeat;
+	}
+	.biti .left_cont .submenu .corner_TL {
+		top: 0;
+		left: 0;
+	}
+	.biti .left_cont .submenu .corner_TR{
+		top: 0;
+		right: 0;
+		background: url("../images/shadow_urfak.gif") 0px -6px no-repeat;
+	}
+	.biti .left_cont .submenu .corner_BL{
+		bottom: 0;
+		left: 0;
+		background: url("../images/shadow_urfak.gif") -6px 0px no-repeat;
+	}
+	.biti .left_cont .submenu .corner_BR {
+		bottom: 0;
+		right: 0;
+		background: url("../images/shadow_urfak.gif") 0px 0px no-repeat;
+	}
+	.biti .left_cont .submenu .menu_title {
+		padding: 0 0 18px 0;
+		font-weight: bold;
+	}
+	.biti .left_cont .submenu ul {
+		padding: 0;
+	}
+		.biti .left_cont .submenu li {
+			float: none;
+			width: auto;
+			/*height: 20px;*/
+			line-height: 17px;
+			list-style: square inside;
+			padding-right: 0px;
+			background: none;
+		}
+			.biti .left_cont .submenu ul ul {
+				padding-left: 14px;
+			}
+				.biti .left_cont .submenu li li {
+					float: none;
+					width: auto;
+					list-style: square;
+				}
+			.biti .left_cont .submenu li a {
+				position: relative;
+				line-height: normal;
+				overflow: hidden;
+				padding-right: 0px;
+				display: inline; 
+				width: auto;
+				height: auto;
+				color: #000;
+			}
+				.biti .left_cont .submenu li li a {
+					font-weight: normal;
+					color: #010101;
+				}
+				.biti .left_cont .submenu li a span {
+					position: relative;
+					width: auto;
+					overflow: hidden;
+					white-space: normal;
+					text-overflow: clip;
+					-o-text-overflow: clip;
+					-webkit-text-overflow: clip;
+					padding: 0px;
+					margin: 0;
+					display:inline;
+					float: none;
+				}
+				.biti .left_cont .submenu li a em {
+					display: none;
+				}
+			.biti .left_cont .submenu li a:hover {
+				overflow: visible;
+				background: none;
+				z-index: 50;
+				
+				-moz-border-radius: 0px; 
+				-webkit-border-radius: 0px; 
+				-khtml-border-radius: 0px; 
+				border-radius: 0px;
+			}
+				.biti .left_cont .submenu li a:hover span {
+					background: none;
+					overflow: visible;
+					width: auto;
+					white-space: normal;
+					line-height: normal;
+					padding: 0px;
+					text-decoration: underline;
+					
+					/*border: 1px #c7c7c7 solid;*/
+					-moz-border-radius: 0px; 
+					-webkit-border-radius: 0px; 
+					-khtml-border-radius: 0px; 
+					border-radius: 0px;
+				}
+/*----------------------------------------------------------------------------*/
+.news_block {
+	padding: 0 25px 11px 0;
+}
+	.news_block .news_block_title {
+		font-weight: bold;
+	}
+		.news_block .news_block_title a {
+			color: #004c40;
+		}
+	.news_block li {
+		padding: 0 0 20px 0;
+	}			
+		.news_block .news_cont {
+			padding: 4px 0 0 0; 
+		}
+			.news_block .news_title {
+				font-size: 14px;
+				font-weight: bold;
+				color: #004c40;
+			}
+				.news_block .news_title a {
+					color: #004c40;
+				}
+			.news_block .news_text {
+				color: #000;
+			}

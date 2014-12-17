@@ -1,0 +1,411 @@
+body#themes_idop {
+	background: url('../images/idpo/header_bg.jpg') center top repeat-x;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #042E4B;
+}
+
+a { color: #042E4B; }
+
+#nofooter {
+	overflow: hidden;
+	min-width: 1000px;
+}
+/*----------------------------------------------------------------------------*/
+#themes_idop #header {
+	background: url('../images/idpo/header_bg1.jpg') left top no-repeat;
+}
+	#header .globus {
+		position: absolute;
+		width: 436px;
+		height: 200px;
+		top: 0;
+		right: -150px;
+		background: url('../images/idpo/globus.jpg') no-repeat;
+		z-index: 0;
+	}
+#header #logo {
+	position: absolute;
+	font-size: 18px;
+	top: 44px;
+	width: 375px;
+	height: 66px;
+	padding: 0 0 0 220px;
+	text-indent: 0;
+	color: #0078c0;
+	cursor: default;
+}
+	#header #logo a {
+		position: absolute;
+		font-size: 60px;
+		top: 0;
+		left: 0;
+		text-shadow: 4px 1px #FFFFFF;
+		text-decoration: none;
+		color: #0078c0;
+	}
+#nsau_logo {
+	position: absolute;
+	width: 175px;
+	height: 80px;
+	top: 28px;
+	right: 120px;
+	display: block;
+	text-decoration: none;
+	overflow: hidden;
+	text-indent: -9999px;
+	color: #fff;
+}
+	#nsau_logo span {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		cursor: pointer;
+	}
+		#nsau_logo span span {
+			background: url("../images/idpo/ngau_logo.png") no-repeat;
+		}
+#header #gray_line {
+    background: url("../images/idpo/gray_line_bg.png") no-repeat scroll left top #C5C6C6;
+    height: 22px;
+    left: -10px;
+    overflow: visible;
+    position: absolute;
+    top: -26px;
+    width: 100%;
+	padding: 0 0px 0 10px;
+}
+	#header #gray_line div {
+		position: relative;
+		background: url("../images/idpo/gray_line_bg.png") no-repeat scroll left bottom transparent;
+		float: right;
+		height: 22px;
+		width: 15px;
+		right: -10px;
+	}
+#header #header_menu {
+	position: absolute;
+	top: auto;
+	bottom: 0;
+	margin: 0 10px;
+    background: url("../images/idop/main_menu_bg.jpg") repeat-x scroll center top #125f9a;
+}
+	#header #header_menu ul {
+		margin: 0 -10px;
+		background: url("../images/idpo/line_left.png") no-repeat scroll left top transparent;
+	}
+	#header #header_menu #menu_left_bg {
+		background: url("../images/idpo/line_right.png") no-repeat scroll right top transparent;
+		height: 26px;
+		position: absolute;
+		right: -10px;
+		top: 0;
+		width: 524px;
+		z-index: 0;
+	}
+        #header #header_menu li a.active {
+            text-decoration: underline;
+        }
+.header_title {
+    position: absolute;
+	font-size: 18px;
+    left: 285px;
+    top: 42px;
+    width: 36%;
+}
+/*----------------------------------------------------------------------------*/
+#content {
+	z-index: 600;
+}
+#themes_idop .left_column,
+#themes_idop .center_column {
+	width: 290px;
+	float: left;
+	padding-bottom: 1px;
+}
+#themes_idop .center_column {
+	width: 100%;
+	margin: 0 0 0 -290px;
+}
+#themes_idop .left_cont,
+#themes_idop .center_cont {
+	position: relative;
+	float: none;
+	z-index: 500;
+}
+#themes_idop .center_cont {
+	width: auto;
+	margin: 0 0 0px 320px;
+}
+/*-----------------------------Sub menu---------------------------------------*/
+.submenu.vertical_menu {
+	
+}
+	.submenu.vertical_menu ul {
+		padding: 0;
+		margin: 0;
+	}
+		.submenu.vertical_menu li {
+			font-weight: bold;
+			padding: 0;
+			margin: 0 0 5px 0;
+			list-style: none;
+			color: #000;
+		}
+			.submenu.vertical_menu li a {
+				color: #042e4b;
+			}
+			.submenu.vertical_menu li ul {
+				padding: 2px 0 5px 7px;
+			}
+				.submenu.vertical_menu li li {
+					font-weight: normal;
+					padding: 0 0 2px 0;
+					list-style: disc;
+					color: #000;
+				}
+					.submenu.vertical_menu li li a {
+						color: #000;
+					}
+					.submenu.vertical_menu li.current > a {
+                        text-decoration: underline;
+                    }
+/*------------------------Events----------------------------------------------*/
+.events_news .center_cont .title {
+	background: #9C0706 url("../images/idpo/news_events_title.jpg") left top no-repeat;
+}
+.events_news .ui-datepicker .news_events .ui-state-default {
+	background: #0079c1;
+    border-color: #0079c1;
+}
+.events_news .ui-datepicker .current_event .ui-state-default, .events_news .ui-datepicker .news_events .ui-state-hover {
+	background: #FFBE6B;
+}
+.ui-datepicker .ui-datepicker-header a {
+	background: none;
+}
+.ui-datepicker .ui-datepicker-header .ui-datepicker-prev span, .ui-datepicker .ui-datepicker-header .ui-datepicker-next span {
+	width: 12px;
+	height: 23px;
+	top: 2px;
+    background-image: url("../images/idpo/arrow.jpg");
+}
+.ui-datepicker .ui-datepicker-header .ui-datepicker-prev.ui-state-hover span, .ui-datepicker .ui-datepicker-header .ui-datepicker-prev.ui-state-focus span {
+    background-position: left -23px;
+}
+.ui-datepicker .ui-datepicker-header .ui-datepicker-next.ui-state-hover span, .ui-datepicker .ui-datepicker-header .ui-datepicker-next.ui-state-focus span {
+    background-position: right -23px;
+}
+/*------------------------gallery-photos--------------------------------------*/
+.gallery-photos {
+	/*width: 675px;*/
+	margin: 0 auto 25px auto;
+	/*overflow: hidden;*/
+}
+	.gallery-photos ul {
+        position: relative;
+        line-height: 0;
+		padding: 0;
+		margin: 0 -25px -20px 0;
+        text-align: justify;
+        text-justify: newspaper;
+        text-align-last: justify;
+        white-space: -3px;
+        letter-spacing: -4px;
+		zoom: 1;
+	}
+    .gallery-photos ul:after {
+        width: 100%;
+        height: 0px;
+        visibility: hidden;
+        overflow: hidden;
+		content: '. . . . . . . . . . . . . . . . . . . . . .'; 
+		word-spacing: 175px;
+        padding-left: 175px;
+    }
+		.gallery-photos li {
+            font-size: 14px;
+			width: 150px;
+			height: 100px;
+			padding: 0;
+			margin: 0 25px 20px 0;
+			list-style: none;
+			/*float: left;*/
+            text-align: left;
+            text-justify: auto;
+            text-align-last: left;
+		}
+			.gallery-photos li .gallery-item {
+				/*position: relative;*/
+				width: 100%;
+				height: 100%;
+			}
+				.gallery-photos li a {
+					position: relative;
+					top: 0px;
+					left: 0px;
+					display: block;
+					width: 100%;
+					height: 100%;
+					overflow: hidden;
+					z-index: 10;
+					
+					/*-moz-transition:  0.3s ease-in-out;
+					-webkit-transition:  0.3s ease-in-out;
+					-o-transition:  0.3s ease-in-out;
+					transition:  0.3s ease-in-out;*/
+				}
+					.gallery-photos li em {
+						position: absolute;
+						top: 0;
+						left: 0;
+						width: 100%;
+						height: 100%;
+						background: #0079c1;
+						opacity: 0.40;
+						-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";  
+						filter: progid:DXImageTransform.Microsoft.Alpha(opacity=40);
+						/*-moz-transition:  0.3s ease-in-out;
+						-webkit-transition:  0.3s ease-in-out;
+						-o-transition:  0.3s ease-in-out;
+						transition:  0.3s ease-in-out;*/
+						z-index: 15;
+					}
+					.gallery-photos li img {
+						position: relative;
+						width: 100%;
+						display: block;
+						z-index: 10;
+					}
+				.gallery-photos li a:hover {
+					top: -25%;
+					left: -25%;
+					width: 150%;
+					height: 150%;
+					z-index: 20;
+				}
+				.gallery-photos li a:hover {
+					z-index: 30;
+				}
+					.gallery-photos li.active a em,
+					.gallery-photos li a:hover em {
+						opacity: 0.0;
+						-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";  
+						filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0);
+					}
+                                        
+div.consult_button {
+    border: 1px solid #e0e0e0;
+    width:260px;  float:left;
+    margin: 3px;
+    border-radius:6px;  
+    -moz-border-radius:5px; 
+    -khtml-border-radius:10px;       
+    
+        }
+        div.consult_button img {
+text-align: left;
+margin-right: 5px;
+    float:left;
+        }
+                
+        div.consult_button a {
+font-size: 13pt;
+font-weight: bold;
+margin-top: 5px;
+margin-right: 5px;
+margin-right: 5px;
+            }
+            
+   div.consult_cat_header
+   {
+   
+   margin: 3px;
+   border-bottom: 2px solid #e0e0e0;
+   }
+      div.consult_cat_header a {
+font-size: 22pt;
+font-weight: bold;
+margin-top: 5px;
+margin-right: 5px;
+margin-right: 5px;
+            }
+   div.consult_cat_header img {
+margin-right: 25px;
+   }
+    
+            
+        
+        div.Post_expert_card
+        {border: 1px solid #999999;
+        background-image: url("/themes/images/idpo/texture_paper.jpg");
+        width: 460px;
+        padding: 10px;
+        margin-bottom: 10px;
+        margin-top: 10px;
+        
+        -webkit-box-shadow: 0px 0px 10px #222;
+        -moz-box-shadow: 0px 0px 10px #222;
+        box-shadow: 0px 0px 10px #222;
+        }
+        div.Post_expert_card img
+        {border: 1px solid #999999; float:left; margin-right: 15px;
+         }
+        
+        div.Post_expert_card div.Post_expert_card_name
+        {font-size: 13pt;
+        font-weight: bold;
+        text-align: right;
+        }
+        
+        div.Post_expert
+        {border-top: #666666 2px solid;
+         padding-top:20px;
+        }
+        div.Post_expert_card_text_container
+        {font-size: 11pt; font-style: italic}
+        
+        div.Post_expert_card div.phone
+        {
+            font-style: normal; font-size: 10pt;
+        background-image: url("/themes/images/idpo/phone.gif");
+
+                }
+                
+       div.Post_expert_card div.email
+        {
+         
+           margin-top: 15px;
+        background-image: url("/themes/images/idpo/mail.gif");
+        }
+                
+               div.Post_expert_card div.email , div.Post_expert_card div.phone
+               {
+        font-style: normal; font-size: 10pt;
+        background-repeat: no-repeat;
+        padding-left: 200px;
+        padding-top:5px;
+        background-position:180px;
+               }
+               
+               div.category-href {text-align: right}
+               div.category-href a:link {color: #2d436d}
+               
+               
+               h3{font-weight: bold; font-size: 13pt}
+               h2{font-weight: bold; font-size: 14pt; margin-top: 50px}
+               
+               .message{ border: #666666 1px solid;
+                padding:10px;
+                margin: 30px;
+                border-radius:6px;  
+                -moz-border-radius:5px; 
+                -khtml-border-radius:10px; 
+        }
+
+#user_login_info h2 {margin-top: 0px !important; font-size: 16px !important; font-weight: normal !important;}
+
+div#ui-datepicker-div{z-index: 500000 !important;}

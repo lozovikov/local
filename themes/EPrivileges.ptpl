@@ -1,0 +1,138 @@
+<?php
+// version: 1.2
+// date: 2014-01-15
+global $Engine, $Auth, $EE;
+
+if(isset($MODULE_OUTPUT['scripts_mode'])) {
+	switch($MODULE_OUTPUT['scripts_mode']) {
+
+	case 'privileges_form':{
+			
+			$EE["head_extra3"][] = <<<END
+				
+	<script type="text/javascript">
+	
+		jQuery(document).ready(function($) {
+      Select_Object = function(moduleId, curModuleId){
+        $('#select_operation').on('change', function(){
+    			
+          //alert('fdhfxg');
+          console.log($(this).val());
+          
+          var request = {'module': moduleId, 'mode': 'html_code', 'params': 'ajax_get_elements', data: {'module': curModuleId, 'operation': $(this).val()}};
+          $.ajax({
+            type: 'POST',
+            url: '/ajax_mode/',
+            dataType : 'html', 
+            data: request,
+			beforeSend: function(jqxhr, settings) {
+				$('.loading').removeClass('hidden').html(' Идет загрузка списка...').prepend('<img src="/themes/images/loading_news.gif" width="16" />');
+				$('#select_element').attr('disabled', 'disabled');
+			},
+            success: function(html) {
+              var doc = $(html);
+              console.log(doc.find('option[value!=-1]').length);
+              
+              $('#select_element').replaceWith(html);
+              if(doc.find('option[value!=-1]').length) {
+                //$('#element_search').show();
+                $('#element_search + a').show();
+                $('#element_search').hide();
+				$('#entry_id').parents('p').addClass('hidden'); 
+				$('#select_element').parents('p').removeClass('hidden');
+              } 
+              else {
+                $('#element_search + a').hide();
+                $('#element_search').hide();
+				$('#entry_id').parents('p').removeClass('hidden');
+				$('#select_element').parents('p').addClass('hidden');
+              }
+            },
+			complete: function(jqxgr, textStatus) {
+				$('.loading').addClass('hidden').html('');
+				$('#select_element').removeAttr('disabled');
+			}
+          });
+        });
+        
+        $('#select_element').live('change', function() {
+          var entry_id = $(this).val();
+          console.log(entry_id);
+          
+          if(entry_id == -1) {
+            $('#for_all_entries').attr('checked', 'checked');
+            $('#entry_id').attr('disabled', 'disabled');
+          }
+          else { 
+            $('#for_all_entries').removeAttr('checked');
+            $('#entry_id').removeAttr('disabled').val(entry_id); 
+          }
+        });
+        
+        $('#element_search').autocomplete({
+					delay: 500,
+					source: function(request, response) {
+						//if(request.term.length < 3) return;
+						var request = {'module': moduleId, 'mode': 'json', 'params': 'ajax_autocomplete_element', 'data': {'q': request.term, 'module': curModuleId, 'operation': $('#select_operation').val()} };
+					
+						$.ajax({
+						'url': '/ajax_mode/',
+						dataType: 'json',
+						data: request, 
+						success: function(json) {
+								response($.map(json, function(item) {
+								return {
+									label: item.name,
+									value: item.id
+								}
+							}));
+						}
+					})
+					},
+					select: function(event, ui) {
+						var title = ui.item.label.split(' > ');
+			            var entry_id = ui.item.value; 
+			            console.log(entry_id); 
+            
+						title = title[title.length - 1];
+						$('#element_search').attr('value', title);
+						$('#select_element').val(ui.item.value);
+						$('#select_element, #element_search + a').show();
+						$('#element_search').hide();
+            
+			            $('#for_all_entries').removeAttr('checked');
+			            $('#entry_id').removeAttr('disabled').val(entry_id);
+					
+						return false;
+					},
+					focus: function(event, ui) {
+						//$('#select_element, #element_search + a').show();
+						//$('#element_search').hide();
+						return false;
+				    }
+				});
+        
+        $('#element_search').bind('keypress', function(e) {
+          if(e.keyCode == 27 || e.keyCode == 13) {		
+            $('#select_element, #element_search + a').show();
+            $('#element_search').hide();
+          }
+    						
+          if(e.keyCode == 13) { 
+            e.preventDefault();
+            return false;
+          }
+        });
+      
+      }; 
+      
+      
+			
+		});
+	</script>
+END;
+		}
+		
+		}
+	}
+	?>

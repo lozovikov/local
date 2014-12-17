@@ -1,0 +1,44 @@
+<?php 
+// version: 1.0// date: 2013-02-18
+global $Engine, $Auth, $EE;
+
+if(isset($MODULE_OUTPUT['scripts_mode'])) {
+	switch($MODULE_OUTPUT['scripts_mode']) {
+		case 'list_folder': {
+			$EE["head_extra3"][] = <<<END
+	<script type="text/javascript">
+		jQuery(document).ready(function() {
+
+
+    jQuery( ".my_datepicker" ).datepicker({
+                        monthNames: ['Январь','Февраль','Март','Апрель','Май','Июнь', 'Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
+    					monthNamesShort: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июнь', 'Июль', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
+						dayNames: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
+						dayNamesShort: ['Вос', 'Пон', 'Втор', 'Сре', 'Чет', 'Пят', 'Суб'],
+						dayNamesMin: ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],
+						weekHeader: 'Wk',
+                        dateFormat: 'yy/mm/dd'});
+    
+    
+	/* Apply fancybox to multiple items */
+	
+	jQuery("a.del_folder_modal").fancybox({
+		'transitionIn'	:	'elastic',
+		'transitionOut'	:	'elastic',
+		'speedIn'		:	600, 
+		'speedOut'		:	200, 
+		'overlayShow'	:	false
+	});
+	
+});
+    </script>
+END;
+        }
+        break;
+        
+        
+    }
+}
+
+
+?>

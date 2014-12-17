@@ -1,0 +1,31 @@
+.coconut{cursor:default}.coconut-fix{position:relative;}
+.coconut-separator{height:67px;border-bottom:5px solid #bab3a7;position:absolute;top:0;left:0;width:100%}
+.coconut-separator-between{height:67px;border-bottom:5px solid #fff;float:left;width:10px;margin:0 2px}
+.coconut.small .coconut-name,.coconut.big .coconut-name{position:absolute;top:76px;text-align:center;width:100%}
+.coconut.big .coconut-name{top:110px}.coconut.big{float:left;position:relative;width:90px;height:90px}
+.coconut.small{float:left;position:relative;width:60px;height:60px;margin-top:28px;margin-right:0}
+.coconut.big .count{background:url('/themes/images/resize.php?img=big.png&w=90')}.coconut.big .center{background:url('/themes/images/resize.php?img=big-center.png&w=90')}
+.coconut.small .count{background:url('/themes/images/small.png')}.coconut.small .center{background:url('/themes/images/small-center.png')}
+.coconut .count,.coconut .canvas,.coconut .center{width:100%;height:100%;position:absolute;top:0;left:0}
+.coconut.big .center{font-size:58px;line-height:90px;text-align:center;color:#da6c00;opacity:.99}
+.coconut.big .color{height:10px;width:10px;position:absolute;border-radius:200px}
+.coconut.small .center{font-size:24px;line-height:60px;text-align:center;color:#da9857}
+.coconut.small .color{height:10px;width:10px;position:absolute;border-radius:100px}
+.coconut.minutes.big,.coconut.hours.big,.coconut.days.big{margin-right:0}
+.percent-container{width:100%;height:5px;padding:1px 0;margin-bottom:20px}
+.progress-bar{width:0;background:#f2f0f0;height:100%;position:relative;float:left}
+.percent-text{position:absolute;top:-16px;border-top:0 solid #999183;right:0;font-size:12px;padding-top:2px;color:#999183;line-height:1em}
+.coconut.big .color,.coconut.small .color{font-size:28px;border-color:#900;background-color:#f5f5f5}
+.coconut.small .coconut-name,.coconut.big .coconut-name{font-size:12px;font-family:Trebuchet MS;line-height:14px; color: #fff;}
+
+#circular-countdown{
+    position: absolute;
+	overflow: hidden;
+	padding: 0px 0 10px 0;
+	bottom: 29px;
+	left: 50%;
+	margin-left: -154px;
+    height:120px;}
+    .time{
+float: left;
+}

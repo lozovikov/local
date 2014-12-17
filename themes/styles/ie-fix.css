@@ -1,0 +1,43 @@
+/*-----------------------IE6,7,8-------------------*/
+/*.ie9 #file_list_LK.files_moderation .attach_file_list .moderation_status_form .moderation_form_button {
+	box-shadow: 1px -2px 8px -1px #91caed, inset 0px 5px 12px -2px #ffffff, inset 1px -14px 13px -10px #91caed;
+}*/
+/*#file_list_LK.files_moderation .attach_file_list .moderation_status_form .moderation_form_button:hover {
+	-pie-background: linear-gradient(#FCE9E9, #912121);
+}
+#file_list_LK.files_moderation .attach_file_list .moderation_status_form .moderation_form_button:focus:hover {
+	-pie-background: linear-gradient(#751919, #E84B4B);
+}*/
+.ie7 #header #login_search fieldset div, .ie6 #header #login_search fieldset div {
+	background-position: -25px 0px;
+}
+.ie7 #header #login_search fieldset div div, .ie6 #header #login_search fieldset div div {
+	background-position: 0 0px;
+}
+.ie7 #header #login_search #search_form fieldset div div, .ie6 #header #login_search #search_form fieldset div div {
+	background-position: 0 -37px;
+}
+/*-----------------------IE8-----------------------*/
+/*-----------------------IE7-----------------------*/
+.ie7 #news_annonse ul {
+    padding-right: 0;
+}
+.ie7 #news_annonse ul li {
+    padding-right: 0%;
+}
+.ie7 #news_annonse ul li .announce_title {
+    margin-right: 0;
+}
+.ie7 #header #header_menu ul li em {
+    margin-right: 4px;
+}
+/*-----------------------IE6-----------------------*/
+.ie6 #header #login_search fieldset div {
+	background: url("../images/input_left_bg.gif") left 1px no-repeat;
+}
+.ie6 #header #login_search fieldset div div {
+	background: url("../images/input_right_bg.gif") right 1px no-repeat;
+}
+.ie6 #header #login_search #search_form fieldset div div {
+	background: url("../images/input_right_bg1.gif") right 1px no-repeat;
+}

@@ -1,0 +1,31 @@
+<fieldset>
+	<legend>Данные учётной записи</legend>
+	<div class="wide" id="newuser">
+		<div class="form-notes">
+			<dl>
+				<dt><label>Логин<span class="obligatorily">*</span>:</label></dt>
+				<dd><input name="username" type="text" value="<?=(isset($display_variant) ? $display_variant["username"] : "")?>" /></dd>
+				<dt><label>E-mail<span class="obligatorily">*</span>:</label></dt>
+				<dd><input name="email" type="text" value="<?=(isset($display_variant) ? $display_variant["email"] : "")?>" /></dd>
+			</dl>
+		</div>
+		<div class="form-notes">
+			<dl>
+				<dt>
+					<label>Пароль<span class="obligatorily">*</span>:<span id="genpass"></span></label>
+					<span id="copypass"><a onclick="copypass('genpass','add_pass','repeatpass');">использовать этот пароль<span id="instead"></span></a></span>
+				</dt>
+				<dd>
+					<input name="password1" id="add_pass" type="password"  autocomplete="off" />
+					<a onclick="passgen('genpass',3,1,1,'add_pass');">сгенерировать пароль</a>
+				</dd>
+				<dt><label>Повторите пароль<span class="obligatorily">*</span>:</label></dt>
+				<dd><input name="password2" id="repeatpass" type="password" /></dd>
+			</dl>
+		</div>
+	</div>
+	<div class="wide">
+		<input type="hidden" value="add_student" name="mode" />
+		<input type="submit" value="Готово" class="button"/>
+	</div>
+</fieldset>

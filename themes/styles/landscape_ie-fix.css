@@ -1,0 +1,100 @@
+/*======= ie7 and ie6 =============*/
+
+/*============ ie7 ==================*/
+*+html #header #header_menu ul li,
+*+html #header #header_sub_menu ul li {
+	list-style-type:expression(
+		function(t){
+			t.runtimeStyle.listStyleType = 'none';
+			t.insertAdjacentHTML('afterBegin','<span class="list-item-before">/</span>');
+		}(this)
+	);
+}
+*+html #header #header_menu ul li,
+*+html #header #header_sub_menu ul li {
+	padding: 0px 0px 0px 0px;
+}
+/*============ ie6 ==================*/
+
+/*<a href="http://www.point-lu.ru/" onclick="window.open(this.href); return false">*/
+/*
+    behavior: url("scripts/iepngfix.htc");
+-------------------------------------------------
+    background: transparent;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/footer_text_bg.png', sizingMethod='crop');
+-------------------------------------------------
+    _border-top: expression(previousSibling  == null ? 'none' : 'inherit');
+	_background: expression(nextSibling  == null ? 'none' : 'inherit');
+-------------------------------------------------
+	border: 1px #c7c7c7 solid;
+	-moz-border-radius: 10px; 
+	-webkit-border-radius: 10px; 
+	-khtml-border-radius: 10px; 
+	border-radius: 10px; 
+	behavior: url("scripts/border-radius.htc");
+	background: #fff;
+-------------------------------------------------
+	display:-moz-inline-stack; 
+	display:inline-block; 
+	zoom:1; 
+	*display:inline;
+	vertical-align: top;
+-------------------------------------------------
+Тени
+-moz-box-shadow: 15px 5px green;
+-webkit-box-shadow: #FCC 15px 15px;
+-sand-box-shadow: 15px 15px #ffcccc;
+------------------------------------------------
+Градиент
+linear-gradient(top, yellow 0%, blue 100%);
+radial-gradient(50% 50%, farthest-corner, yellow, green);
+repeating-linear-gradient(red, blue 20px, red 40px);
+repeating-radial-gradient(20px 30px, circle contain, red, yellow, green 100%, yellow 150%, red 200%);
+
+background-image: -sand-gradient(linear, left top, right top, from(rgba(255, 0, 0,  0.5)), to(rgba(0, 0, 255, 0.5)));
+
+-------------------------------------------------
+    -sand-transform:
+    -moz-transform: translate(100px)    //Смещение
+                    rotate(40deg)       //Вращение
+                    scale(2.0)          //Маштаб
+                    skew(0deg, 0deg)    //наклон
+                    ;         
+    -moz-transform-origin: 60% 100%;
+
+    -webkit-transform: translate(100px) rotate(40deg);
+    -webkit-transform-origin: 60% 100%;
+
+    -o-transform:translate(100px) rotate(40deg); 
+    -o-transform-origin:60% 100%;
+    
+    -moz-transform: matrix(1, -0.2, 0, 1, 0, 0);
+    -webkit-transform: matrix(1, -0.2, 0, 1, 0, 0);
+    -o-transform:matrix(1, -0.2, 0, 1, 0, 0);
+    transform: matrix(1.0,1,-1,1.0,0,0) ;
+    
+    style.MozTransform = 'matrix(1, 0, 0, 1, 1em, 1em)';  // Gecko (Firefox)
+    style.WebkitTransform = 'matrix(1, 0, 0, 1, 10, 10)'; // Webkit (Chrome, Safari)
+    style.OTransform = 'matrix(1, 0, 0, 1, 10, 10)';      // Presto (Opera)
+    style.transform = 'matrix(1, 0, 0, 1, 10, 10)';       // Все остальные, на всякий случай.
+-------------------------------------------------
+Любой текст, написаный после спец-символа &#x202E; переворачивается
+-------------------------------------------------
+Поворот текста в ИЕ
+    filter:progid:DXImageTransform.Microsoft.Matrix(sizingMethod="auto expand", M11 = 1, M12 = 0, M21 = 0, M22 = 1);
+
+    filter:progid:DXImageTransform.Microsoft.BasicImage(rotation=2)filter: flipv() fliph();
+	writing-mode: tb-rl;
+-------------------------------------------------
+    opacity: 0.28;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=28)";  
+    filter: progid:DXImageTransform.Microsoft.Alpha(opacity=28);
+-------------------------------------------------
+Перенос длинной строки
+    white-space: pre-wrap;  css-3 
+	white-space: -moz-pre-wrap;  Mozilla, начиная с 1999 года 
+	white-space: -pre-wrap;  Opera 4-6 
+	white-space: -o-pre-wrap;  Opera 7 
+	word-wrap: break-word;  Internet Explorer 5.5+ 
+*/
+

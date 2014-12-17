@@ -1,0 +1,5 @@
+@media print {
+	div#header, div.horisontal_menu, div#footer, div#bg, table#choosegroup, a#aprint {
+		display: none;
+	}
+}

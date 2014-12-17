@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "xhtml11.dtd">
+<html>
+<head>
+<META http-equiv=Content-Type content="text/html; charset=windows-1251">
+
+<title>Фотогалерея без рамки, подпись под картинкой переход через меню над большим фото  Highslide JS</title>
+<style type="text/css"> 
+ 
+* { margin, padding: 0; }
+ 
+body {
+	
+	margin: 70px;
+}
+ 
+h1 {
+	display: block; text-decoration: none;
+	font: 48px Helvetica, Arial, Sans-Serif; letter-spacing: -2px;  
+	text-align: center;
+	color: #999; text-shadow: 0px 3px 8px #2a2a2a;
+ }
+ 
+</style>
+<!--
+	1 ) Reference to the files containing the JavaScript and CSS.
+	These files must be located on your server.
+-->
+
+
+
+<!--
+	2) Optionally override the settings defined at the top
+	of the highslide.js file. The parameter hs.graphicsDir is important!
+-->
+
+
+	<script type="text/javascript" src="http://nsau.local/scripts/tinymce/tinymce.min.js"></script>
+<script>
+tinymce.init({
+    selector: "textarea",
+    theme: "modern",
+    width: 300,
+    height: 300,
+    plugins: [
+         "advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker",
+         "searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking",
+         "save table contextmenu directionality emoticons template paste textcolor"
+   ],
+   content_css: "css/content.css",
+   toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | l      ink image | print preview media fullpage | forecolor backcolor emoticons", 
+   style_formats: [
+        {title: 'Bold text', inline: 'b'},
+        {title: 'Red text', inline: 'span', styles: {color: '#ff0000'}},
+        {title: 'Red header', block: 'h1', styles: {color: '#ff0000'}},
+        {title: 'Example 1', inline: 'span', classes: 'example1'},
+        {title: 'Example 2', inline: 'span', classes: 'example2'},
+        {title: 'Table styles'},
+        {title: 'Table row 1', selector: 'tr', classes: 'tablerow1'}
+    ]
+ }); 
+</script>
+</head>
+
+<body>
+
+
+<textarea id="elm1" name="area"></textarea>
+<h1>Галерея без рамки, подпись под картинкой</h1>
+<div style="text-align: center;">
+<!--
+	3) Put the thumbnails inside a div for styling
+-->
+<div class="highslide-gallery">
+
+<!--
+	4) This is how you mark up the thumbnail image with an anchor tag around it.
+	The anchor's href attribute defines the URL of the full-size image.
+-->
+<a href="http://www.03www.ru/pic/001.jpg" class="highslide" onclick="return hs.expand(this)">
+	<img src="http://www.03www.ru/pic/001.jpg" alt="Highslide JS"
+		title="Click to enlarge" width="100"/></a>
+
+<!--
+	5 (optional). This is how you mark up the caption. The correct class name is important.
+-->
+
+<div class="highslide-caption">
+	Заголовок для первого изображения.
+</div>
+
+
+<!-- Repetionion of the above -->
+<a href="http://www.03www.ru/pic/002.jpg" class="highslide" onclick="return hs.expand(this)">
+	<img src="http://www.03www.ru/pic/002.jpg" alt="Highslide JS"
+		title="Click to enlarge" width="100"/></a>
+
+<div class="highslide-caption">
+	Заголовок для второго изображения.
+</div>
+
+<a href="http://www.03www.ru/pic/003.jpg" class="highslide" onclick="return hs.expand(this)">
+	<img src="http://www.03www.ru/pic/003.jpg" alt="Highslide JS"
+		title="Click to enlarge" width="100"/></a>
+
+<div class="highslide-caption">
+	Заголовок для третьего изображения.
+</div>
+
+</div></div>
+<p><a href="highslide.zip">highslide.zip</a></p></body>
+</html>

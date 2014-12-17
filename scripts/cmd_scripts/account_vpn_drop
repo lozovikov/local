@@ -1,0 +1,3 @@
+#!/bin/sh
+
+/usr/bin/ssh nsau_web_vpn@192.168.30.14 "cd /usr/local/www/mbit-bs/bin/ && /usr/local/bin/sudo ./account_vpn_drop $@ Mbit 2>&1"

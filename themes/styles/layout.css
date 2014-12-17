@@ -1,0 +1,527 @@
+/*Youjoomla.com default CSS Layout*/
+body {
+text-align:center; /*center hack*/
+padding:0; 
+margin:0;
+font-family: Lucida Grande, Lucida Sans Unicode, sans-serif;
+font-size:11px; 
+color:#666666;  
+line-height: 14pt; 
+background-color:#FFFFFF;
+}
+#centar,#centar2,#centarmain{
+text-align:left;
+margin:0 auto;
+/*width:1000px; change width on fly*/
+}
+#wrap {
+width:100%; /*center hack*/
+margin:0 auto; /*center hack*/
+text-align:left;
+height:100% !Important;
+height:1%;
+}
+#insidewrap {
+height:100% !Important;height:1%;
+}
+#wrapblank{
+width:100%; /*center hack*/
+margin:0 auto; /*center hack*/
+text-align:left;
+height:100% !Important;
+height:1%;
+}
+#insidewrapblank {
+height:100% !Important;height:1%;
+}
+#newsflash,#bannerb{
+margin:0 auto;
+text-align:center;
+overflow:hidden;
+margin-bottom:10px;
+}
+#user8,#user9,
+#advert1,#advert2{
+text-align:left;
+float:left;
+}
+#header{
+background:url(../images/biotech/headerbg.gif) repeat-x left top;
+text-align:left;
+height:104px;
+}
+#hl{
+text-align:left;
+height:104px;
+background: url(../images/biotech/headl.gif) no-repeat left top;
+}
+#hr{
+text-align:left;
+height:104px;
+background: url(../images/biotech/headr.gif) no-repeat right top;
+}
+#logo{
+height:104px;
+text-align:left;
+}
+#tags h1 a{
+text-indent:-7500px;
+display:block;
+width:300px;
+text-decoration:none;
+}
+#tags{
+width:30%;
+float:left;
+overflow:hidden;
+margin-top:10px;
+}
+#banw{
+width:69%;
+float:right;
+height:73px;
+}
+#banner{
+width:300px;
+height:60px;
+float:left;
+margin-top:12px;
+overflow:hidden;
+}
+#searchbox{
+float:right;
+width:167px;
+height:31px;
+background:url(../images/biotech/searchng.gif) no-repeat left top;
+margin-top:20px;
+margin-right:10px;
+}
+#searchbox .inputbox{
+margin-left:30px;
+margin-top:-2px;
+background:none;
+border:0px;
+width:126px;
+}
+
+#srch{
+height:73px;
+width:100%;
+
+}
+#botw{
+text-align:center;
+height:189px;
+margin:0 auto;
+background: url(../images/biotech/bww.gif) repeat-x left top;
+overflow:hidden;
+}
+#bwl{
+text-align:left;
+height:189px;
+background: url(../images/biotech/bwl.gif) no-repeat left top;
+}
+#bwr{
+text-align:left;
+height:189px;
+background: url(../images/biotech/bwr.gif) no-repeat right top;
+
+}
+#botmwr{
+padding:5px 10px;
+margin:0 auto;
+}
+#user3,#user4,#user5{
+float:left;
+text-align:left;
+}
+#footer {
+text-align:left;
+margin:0 auto;
+background: url(../images/biotech/ff.gif) repeat-x left top;
+height:54px;
+}
+#fl{
+text-align:left;
+background: url(../images/biotech/fl.gif) no-repeat left top;
+height:54px;
+}
+#fr{
+text-align:center;
+background: url(../images/biotech/fr.gif) no-repeat right top;
+height:54px;
+
+}
+#copyright{
+padding-top:10px;
+}
+#tools{
+float:left;
+margin-left:30px;
+}
+#mainbody {
+float:left;
+width:75%;
+}
+#right {
+float:right;
+width:25%;
+overflow:hidden;
+margin-left:-3px;
+}
+
+#left {
+float:left;
+width:33.5%;
+overflow:hidden;
+margin-right:-3px;
+}
+
+#content {
+float:right;
+width:66.5%;
+overflow:hidden;
+}
+/*left only*/
+#mainbody_L {
+float:left;
+width:100%;
+}
+#content_L {
+float:right;
+width:75%;
+overflow:hidden;
+}
+#left_L {
+float:left;
+width:25%;
+overflow:hidden;
+margin-right:-3px;
+}
+/*right only*/
+
+#mainbody_R{
+float:left;
+width:75%;
+}
+#content_R {
+float:right;
+width:98%;
+overflow:hidden;
+}
+#right_R {
+float:right;
+width:25%;
+overflow:hidden;
+margin-left:-3px;
+}
+.inside {
+padding:10px;
+}
+#footer,.small,.createdate,.modifydate,.mosimage_caption{
+font:0.8em Arial,Helvetica,sans-serif;
+color:#999;
+}
+
+.copyright {margin:5px;color: #999;text-align:left;}
+.copyright a:link,.copyright a:visited{color: #999;font-size:0.8em;text-decoration:none;}
+
+.clr{
+clear:both;
+}
+
+
+#box{
+position: relative;
+margin-left: auto;
+margin-right: auto;	
+margin-top: 1em;
+padding: 0;
+text-align: left;
+width:100%;	
+background-color: #fff;
+}
+#boxcontenttop{
+padding:20px 3px 20px 3px;
+}
+#tlc, #trc, #blc, #brc	{
+background-color: transparent;
+background-repeat: no-repeat;
+}
+#tlc{
+background-image:url(../images/biotech/round/tlc.gif);
+background-position: 0% 0%;
+height:100% !Important;height:1%;
+}
+#trc{
+background-image:url(../images/biotech/round/trc.gif);
+background-position: 100% 0%;
+height:100% !Important;height:1%;
+}
+#blc{
+background-image:url(../images/biotech/round/blc.gif);
+background-position: 0% 100%;
+}
+#brc{
+background-image:url(../images/biotech/round/brc.gif);
+background-position: 100% 100%;
+}
+#tb, #bb{
+background-color: transparent;
+background-repeat: repeat-x;
+}
+#tb{
+background-image:url(../images/biotech/round/tb.gif);
+background-position: 0% 0%;
+}
+#bb{
+background-image:url(../images/biotech/round/bb.gif);
+background-position: 50% 100%;
+}
+#rb{
+background-image:url(../images/biotech/round/r.gif);
+background-position: 100% 0%;
+background-repeat: repeat-y;
+}
+#lb{
+background-color: #fff;
+background-image:url(../images/biotech/round/l.gif);
+background-position: 0% 100%;
+background-repeat: repeat-y;
+}
+/*box top*/
+#topwr{
+height:232px;
+}
+#user1{
+height:232px;
+overflow:hidden;
+text-align:left;
+float:left;
+}
+#user2{
+text-align:left;
+float:right;
+background: url(../images/biotech/gr.gif) no-repeat left top;
+height:232px;
+overflow:hidden;
+padding:0 10px;
+}
+#user2_2{
+text-align:left;
+float:right;
+height:232px;
+overflow:hidden;
+padding:0 5px;
+}
+#boxtop{
+position: relative;
+margin-left: auto;
+margin-right: auto;	
+margin-top: 1em;
+padding: 0;
+text-align: left;
+width:100%;
+background-color: #fff;
+height:100% !Important;height:1%;
+}
+#boxcontent{
+padding:13px 15px 13px 15px;
+}
+#tlctop, #trctop, #blctop, #brctop	{
+background-color: transparent;
+background-repeat: no-repeat;
+}
+#tlctop{
+background-image:url(../images/biotech/round/tlc_top.gif);
+background-position: 0% 0%;
+height:100% !Important;height:1%;
+}
+#trctop{
+background-image:url(../images/biotech/round/trc_top.gif);
+background-position: 100% 0%;
+height:100% !Important;height:1%;
+}
+#blctop{
+background-image:url(../images/biotech/round/blc_top.gif);
+background-position: 0% 100%;
+}
+#brctop{
+background-image:url(../images/biotech/round/brc_top.gif);
+background-position: 100% 100%;
+}
+#tbtop, #bbtop{
+background-color: transparent;
+background-repeat: repeat-x;
+}
+#tbtop{
+background-image:url(../images/biotech/round/tb_top.gif);
+background-position: 0% 0%;
+}
+#bbtop{
+background-image:url(../images/biotech/round/bb_top.gif);
+background-position: 50% 100%;
+}
+#rbtop{
+background-image:url(../images/biotech/round/r_top.gif);
+background-position: 100% 0%;
+background-repeat: repeat-y;
+}
+#lbtop{
+background-color: #f4f2f2;
+background-image:url(../images/biotech/round/l_top.gif);
+background-position: 0% 100%;
+background-repeat: repeat-y;
+}
+
+/*******************/
+/*ROUND IT UP DEFAULT ROUND MODULE*/
+.module p,.module_red p,.module_green p,
+.module_blue p,.module_orange p{
+overflow:hidden;
+padding:3px;
+}
+/******************************/
+.module{
+margin: 5px 0 10px;
+padding: 0;
+float: left;
+clear: both;
+width: 100%;
+color:#666666;
+height:100% !Important;height:1%;
+}
+.module_red,.module_green,
+.module_blue,.module_orange{
+margin: 5px 0 10px;
+padding: 0;
+float: left;
+clear: both;
+width: 100%;
+color:#fff;
+height:100% !Important;height:1%;
+}
+.module h3{
+}
+.module h3,.module_red h3,.module_green h3,
+.module_blue h3,.module_orange h3{
+margin: -4px -7px 5px;
+padding-left:8px;
+font-size: 120%;
+line-height: normal;
+text-transform: capitalize;
+font: normal 18px  "Segoe UI", Arial, Helvetica, sans-serif;
+width:95%;
+overflow:hidden;
+}
+.module div div div,
+.module_red div div div,
+.module_green div div div,
+.module_blue div div div,
+.module_orange div div div{
+padding: 15px;
+}
+.module div div div div,
+.module_red div div div div,
+.module_green div div div div,
+.module_blue div div div div,
+.module_orange div div div div{
+background: none;
+}
+/*red*/
+.module_red h3{
+color:#fff;
+}
+.module_red {
+background:url(../images/biotech/br_red.gif) 100% 100% no-repeat;
+}
+.module_red div{
+background: url(../images/biotech/bl_red.gif) 0 100% no-repeat;
+height:100% !Important;height:1%;
+}
+.module_red div div {
+background: url(../images/biotech/tr_red.gif) 100% 0 no-repeat;
+}
+.module_red div div div {
+background: url(../images/biotech/tl_red.gif) 0 0 no-repeat;
+}
+/*blue*/
+.module_blue h3{
+color:#fff;
+}
+.module_blue {
+background:url(../images/biotech/br_blue.gif) 100% 100% no-repeat;
+}
+.module_blue div{
+background: url(../images/biotech/bl_blue.gif) 0 100% no-repeat;
+height:100% !Important;height:1%;
+}
+.module_blue div div {
+background: url(../images/biotech/tr_blue.gif) 100% 0 no-repeat;
+}
+.module_blue div div div {
+background: url(../images/biotech/tl_blue.gif) 0 0 no-repeat;
+}
+/*green*/
+.module_green h3{
+color:#fff;
+}
+.module_green {
+background:url(../images/biotech/br_green.gif) 100% 100% no-repeat;
+}
+.module_green div{
+background: url(../images/biotech/bl_green.gif) 0 100% no-repeat;
+height:100% !Important;height:1%;
+}
+.module_green div div {
+background: url(../images/biotech/tr_green.gif) 100% 0 no-repeat;
+}
+.module_green div div div {
+background: url(../images/biotech/tl_green.gif) 0 0 no-repeat;
+}
+/*orange*/
+.module_orange h3{
+color:#fff;
+}
+.module_orange {
+background:url(../images/biotech/br_orange.gif) 100% 100% no-repeat;
+}
+.module_orange div{
+background: url(../images/biotech/bl_orange.gif) 0 100% no-repeat;
+height:100% !Important;height:1%;
+}
+.module_orange div div {
+background: url(../images/biotech/tr_orange.gif) 100% 0 no-repeat;
+}
+.module_orange div div div {
+background: url(../images/biotech/tl_orange.gif) 0 0 no-repeat;
+}
+table.pollstableborder td.sectiontableentry1,
+table.pollstableborder td.sectiontableentry2, 
+table.pollstableborder tr.sectiontableentry1 td,
+table.pollstableborder tr.sectiontableentry2 td,
+table.pollstableborder_green td.sectiontableentry1_green,
+table.pollstableborder_green td.sectiontableentry2_green, 
+table.pollstableborder_green tr.sectiontableentry1_green td,
+table.pollstableborder_green tr.sectiontableentry2_green td,
+table.pollstableborder_red td.sectiontableentry1_red,
+table.pollstableborder_red td.sectiontableentry2_red, 
+table.pollstableborder_red tr.sectiontableentry1_red td,
+table.pollstableborder_red tr.sectiontableentry2_red td,
+table.pollstableborder_orange td.sectiontableentry1_orange,
+table.pollstableborder_orange td.sectiontableentry2_orange, 
+table.pollstableborder_orange tr.sectiontableentry1_orange td,
+table.pollstableborder_orange tr.sectiontableentry2_orange td,
+table.pollstableborder_blue td.sectiontableentry1_blue,
+table.pollstableborder_blue td.sectiontableentry2_blue, 
+table.pollstableborder_blue tr.sectiontableentry1_blue td,
+table.pollstableborder_blue tr.sectiontableentry2_blue td{
+height: 20px;
+padding-left: 5px;
+text-align:left;
+padding-right: 10px;
+line-height: 18px;
+margin-bottom:5px;
+background: none;
+border:none;
+}

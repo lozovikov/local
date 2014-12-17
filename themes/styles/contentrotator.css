@@ -1,0 +1,153 @@
+
+/* Rotator Styles */
+
+
+#rotator {
+	background:#FFF;
+	color:#000;
+	position:relative;
+	padding-bottom:2.6em;
+	margin:0; 
+	font-size:16px;
+}
+
+/* Tabs */
+ul.ui-tabs-nav, li.ui-tabs-nav-item, li.ui-tabs-nav-item a:link, li.ui-tabs-nav-item a:visited {
+	/* margin:0; */
+	padding:0;
+	border:0;
+	outline:0;
+	line-height:1.3;
+	text-decoration:none;
+	/* font-size:100%; */
+	list-style:none;
+	float:left;
+	font-family:Arial, Helvetica, sans-serif;
+	
+	top:-75px;
+}
+
+ul.ui-tabs-nav {
+	position:absolute;
+	left:0;
+	z-index:1;
+	width:100%;
+	margin-top: 25px;
+
+	
+	height: 20px;
+}
+
+/* Non-Selected Tabs */
+li.ui-tabs-nav-item a:link,
+li.ui-tabs-nav-item a:visited {	
+	font-size:.8em;
+	font-weight:normal;
+	color:#999;
+	background:url("../images/tab.jpg") no-repeat bottom left; 
+	
+	
+}
+
+/* Hovered Tab */
+#rotator .ui-tabs-nav-item a:hover,
+#rotator .ui-tabs-nav-item a:active {
+	background:url("../images/tab_active.jpg") no-repeat bottom left;
+	color:#333;
+}
+
+#rotator .ui-tabs-nav-item a span {
+	float:left; 
+	padding:1em; 
+	cursor:pointer;
+}
+
+/* Active Tab */
+#rotator .ui-tabs-selected a:link,
+#rotator .ui-tabs-selected a:visited,
+#rotator .ui-tabs-selected a:hover,
+#rotator .ui-tabs-selected a:active {
+	background: url("../images/tab_active.jpg") no-repeat bottom left;
+	color:#333;
+}
+
+/* Content Panels */
+#rotator .ui-tabs-panel {
+	font-family:Arial, Helvetica, sans-serif;
+	clear:left;
+	color:#000;
+	
+	width:100%;
+	
+}
+
+.tab_wr{
+background: #ebebeb;
+width:100%;
+min-height: 45px;
+margin-top:10px;
+
+	
+	
+}
+#rotator .ui-tabs-hide {
+	display:none;
+}
+
+
+
+
+#rotator .btn_get_started {
+	float:left;
+	
+	width:99px;
+	text-indent:-9999em;
+	margin-right:7px; 
+	overflow:hidden; 
+	
+}
+
+#rotator .btn_learn_more {
+	float:left;
+
+	font-size:.9em;
+}
+
+/* Background Images */
+.submenu_1 {
+	position: relative;
+	background: #ebebeb;
+	padding:16px 13px 16px 13px;
+	
+}
+
+
+.submenu_1 .corner_TL, .submenu_1 .corner_TR, .submenu_1 .corner_BL, .submenu_1 .corner_BR {
+		position: absolute;
+		height: 14px;
+		width: 14px;
+		overflow: hidden;
+		background: url("../images/submenu_bg.jpg") 0px 0px no-repeat;
+	}
+	.submenu_1 .corner_TL {
+		top: 0;
+		left: 0;
+
+	}
+	.submenu_1 .corner_TR{
+		top: 0;
+		right: 0;
+		background: url("../images/submenu_bg.jpg") -14px 0px no-repeat;
+	}
+	.submenu_1 .corner_BL{
+		bottom: 0;
+		left: 0;
+		background: url("../images/submenu_bg.jpg") 0px -14px no-repeat;
+	}
+	.submenu_1 .corner_BR {
+		bottom: 0;
+		right: 0;
+		background: url("../images/submenu_bg.jpg") -14px -14px no-repeat;
+	}
+
+.submenu_1 img{margin:0 15px 0 0!important;}

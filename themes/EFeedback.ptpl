@@ -1,0 +1,85 @@
+<?php
+// version: 2.2
+// date: 2012-05-10
+global $Engine, $Auth, $EE;
+
+if(isset($MODULE_OUTPUT['scripts_mode'])) {
+	switch($MODULE_OUTPUT['scripts_mode']) {
+		case 'test': {
+			$EE["head_extra3"][] = <<<END
+	<script type="text/javascript">
+		jQuery(document).ready(function($) {
+			test = function() {
+			};
+		});
+	</script>
+END;
+		}
+		break;
+	}
+}
+	
+	/*$head_Extra = "
+	
+	<script type='text/javascript'>
+		
+		var supportFormIniter = null;
+		
+		(function($) { 
+			var erText = '';
+		
+			var ifTextSel = function() {			
+				if (window.getSelection) {
+					erText = window.getSelection().toString(); 
+				} else if (document.getSelection) {
+					erText = document.getSelection();  
+				} else if (document.selection) {
+					erText = document.selection.createRange().text;
+				}
+				return (erText != '' ? true : false);
+			}
+			
+			var setErrorText = function () {
+				$('#errorText').html(erText);
+			}
+			
+			supportFormIniter = {
+				'position': 'Center',
+				'template': '<div><div id=\"errorText\"></div><div id=\"supportFormCommentLabelCont\">Комментарий:</div><div id=\"supportFormCommentCont\"><textarea id=\"errorComment\"></textarea></div><div id=\"supportFormResMsgCont\">Сообщение отправлено</div><div id=\"supportFormOkBtnCont\"><input type=\"button\" value=\"Отправить\" /></div></div>',
+				'css': '/themes/styles/test.css',
+				'id': 'supportForm',
+				'title': 'Сообщение об обнаруженной ошибке:',
+				'feedbackModuleId': ".$MODULE_OUTPUT['module_id'].",
+				'ajaxUrl': '".AJAX_URL."',
+				'afterShow': {'funcs': [setErrorText], 'params':[[]]},
+				'onShow': {'funcs': [ifTextSel], 'params':[[]]},
+				'keyboardHlr': {'keyCode': 13, 'ctrlKey': true, 'shiftKey': false}
+			}
+			
+		$('a.checkUserMsg').click( 
+				function () {
+					request = {'module': ".$MODULE_OUTPUT['module_id'].",  'params': 'set_user_message_as_checked', 'data': {'id': this.id.split('_')[1]}};
+					caller = this; 
+					$.ajax({
+						type: 'POST',
+						url: '".AJAX_URL."', 
+						data: request,
+						success: function(resOk) {
+							
+							if (resOk){
+								$(caller).closest('tr').css('backgroundColor', '#a0e0a0');
+								$(caller).replaceWith('<img src=\"/themes/images/edit-add.png\"/>');
+							}
+						}
+					}
+					);
+				});
+		}) (jQuery);
+		
+
+	</script>
+";
+$EE["head_extra3"][] = $head_Extra;*/
+
+
+?>

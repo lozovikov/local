@@ -1,0 +1,313 @@
+<?php
+// version: 1.7
+// date: 2012-05-10
+global $Engine, $Auth, $EE;
+
+if(isset($MODULE_OUTPUT['scripts_mode'])) {
+	switch($MODULE_OUTPUT['scripts_mode']) {
+		case 'abitfile': 
+			$EE["head_extra3"][] = <<<END
+				<script type='text/javascript'>
+					jQuery(document).ready(function($) {
+			            AjaxAbitForm = function(moduleId, abitProgressFile){
+									
+			              var statusChecker;
+			              var inProgress = false;
+			  						
+			              function checkStatus() {
+			                //$('#abitfile_status').addClass('red');
+			                $.ajax({
+			                    url: abitProgressFile,
+			                }).done(function(data) {
+			                  if (!data) {
+			                    //$('#abitfile_submit').css('display', 'block');
+			                    if (inProgress) {
+			                      $('#abitfile_status').html('Данные загружены. Идет обработка...');
+			                      inProgress = false;
+			                    }
+			                  } else if (data) {
+			                    $('#abitfile_submit').css('display', 'none');
+			                    $('#abitfile_status').addClass('red');
+			                    $('#abitfile_status').html(data == '1' ? 'Идёт загрузка файла...' : 'Идёт загрузка файла...<br />Загрузка завершена. Идёт обработка файла...<br/>');
+			                    if (data != '1' && data != '2' && !inProgress) {
+			                      $.ajax({
+			                        type: 'POST',
+			                        url: '/ajax_mode/', 
+			                        data: {'module': moduleId, 'params': 'abitfile_processing', 'type': 'data'},
+			                        success: function( data ) {
+			                          $('#abitfile_status').html('Данные загружены.');	
+			                        }
+			                      });
+			  										
+			                    }
+			                    if (!inProgress) inProgress = true;
+			                    statusChecker = setTimeout(checkStatus, 1000);
+			                  }
+			                });
+			                //setTimeout(checkStatus, 1000);
+			              }
+			  						
+			              var request = {'module': moduleId, 'params': 'ajax_abitfile', 'mode': 'json'};
+			              $('#abitform').ajaxForm({
+												type: 'POST',
+												url: '/ajax_mode/', 
+												data: request,
+	                      resetForm: true, 
+												beforeSubmit: function( data ) {	
+	                        $('#abitfile_submit').css('display', 'none');
+	                        $('#abitfile_status').addClass('red');
+	                        inProgress = true; 
+	                        statusChecker = setTimeout(checkStatus, 1000);
+	                        $('#abitfile_status').html('Идёт загрузка файла...');	
+												}, 
+	                      success: function(data,statusText) {
+	                        data = $.parseJSON(data);
+	                        inProgress = false;
+	                        clearTimeout(statusChecker);             
+	                        $('#abitfile_submit').css('display', 'block');
+	                        $('#abitfile_status').html('');
+	                        $('#abitfile_status').removeClass('red');
+	                        for(var i = 0; i < data.messages.good.length; i++){
+	                          $('#abitfile_status').append('<p class=\"message\">'+data.messages.good[i]+'</p>');
+	                        }
+	                        for(var i = 0; i < data.messages.bad.length; i++){
+	                          $('#abitfile_status').append('<p class=\"message red\">'+data.messages.bad[i]+'</p>');
+	                        } 
+	                      }
+						});
+						};
+					});
+				</script>
+END;
+		break;
+		
+		case 'edit_spec': {
+			if ($Engine->OperationAllowed($MODULE_OUTPUT["module_id"], "places_info.handle", 0, $Auth->usergroup_id)) {
+				$fields_info = $MODULE_OUTPUT['edit_info'];
+			
+				$script = <<<END
+			var field_types = new Array();
+
+END;
+				$faculty_ind = 0;
+				foreach($fields_info as $faculty_info) {
+					$faculty_ind++;					
+					$script.= <<<END
+				field_types['{$faculty_ind}'] = {'budget': new Array(), 'budget_ext': new Array(), 'commerce': new Array(), 'purpose': new Array()};
+
+END;
+					foreach($faculty_info['specs'] as $ind=>$field_info) {				
+						$script.= <<<END
+				field_types['{$faculty_ind}'].budget[{$field_info->id}] = '{$field_info->budget}';
+				field_types['{$faculty_ind}'].budget_ext[{$field_info->id}] = '{$field_info->budget_ext}';
+				field_types['{$faculty_ind}'].commerce[{$field_info->id}] = '{$field_info->commerce}';
+				field_types['{$faculty_ind}'].purpose[{$field_info->id}] = '{$field_info->purpose}';
+
+END;
+					}
+				}
+				$EE["head_extra3"][] = <<<END
+	<script type="text/javascript">
+		jQuery(document).ready(function($) {
+			AbitEditInfo = function() {
+				{$script}
+				do_submit = function() { 
+					data_str = '';
+					
+					for (var faculty_ind in field_types) {
+						for (var ind in field_types[faculty_ind]) {							
+							for (var id in field_types[faculty_ind][ind]) {								
+								value = document.getElementById(faculty_ind+'-'+ind+'-'+id).value;
+								if (value != field_types[faculty_ind][ind][id]) {
+									data_str += ind+'-'+id+'='+value+';';
+								};
+							};
+						};
+					};				  
+					document.getElementById('post_data').value = data_str;					
+					return true;
+				};
+				
+				key_down = function(cur_event) {
+					if (typeof(cur_event) == 'undefined') cur_event = event;
+					if ( !((cur_event.keyCode > 47 && cur_event.keyCode <58) || (!basic_mode && (cur_event.keyCode > 95 && cur_event.keyCode < 106)) || cur_event.keyCode ==8 || cur_event.keyCode == 46) ) {
+						if (cur_event.preventDefault) cur_event.preventDefault();
+						else cur_event.returnValue = false;
+						is_valid_key = false;
+						return false;
+					} else { 
+						cur_elem = (cur_event.srcElement ? cur_event.srcElement : this); 
+						old_value = cur_elem.value;
+						is_valid_key = true;
+					};
+				};
+				
+				key_up = function(cur_event) {
+					if (typeof(cur_event) == 'undefined') cur_event = event;
+					if (is_valid_key) { 
+						cur_elem = (cur_event.srcElement ? cur_event.srcElement : this);
+						var id_parts = cur_elem.id.split('-');
+						var faculty_field = document.getElementById(id_parts[0]+'-'+id_parts[1]);
+						var sum_field = document.getElementById('sum-'+id_parts[1]);
+						if (cur_elem.value == '') cur_elem.value = '0';
+						else if (cur_elem.value[0] == '0' && cur_elem.value.length > 1) cur_elem.value = cur_elem.value.substr(1);
+						var new_value = document.createTextNode(faculty_field.childNodes[0].nodeValue-old_value+parseInt(cur_elem.value));
+						faculty_field.replaceChild(new_value, faculty_field.childNodes[0]);
+						new_value = document.createTextNode(sum_field.childNodes[0].nodeValue-old_value+parseInt(cur_elem.value));
+						sum_field.replaceChild(new_value, sum_field.childNodes[0]);
+					};
+				};
+				
+				setKeyboardHandlers = function() {
+					if(document.getElementsByClassName == undefined) { 
+						document.getElementsByClassName = function(cl) {
+							var retnode = []; 
+							var elem = this.getElementsByTagName('*'); 
+							for (var i = 0; i < elem.length; i++) { 
+								var classes = elem[i].className; 
+								if (cl == classes) { 
+									retnode.push(elem[i]); 
+								};
+							};					
+							return retnode; 
+						};
+					}; 
+					var elems = document.getElementsByClassName('info_cell');
+					for (var ind=0; ind < elems.length; ind++) {
+						if (elems[ind].addEventListener){
+							elems[ind].addEventListener('keydown', key_down, false);
+							elems[ind].addEventListener('keyup', key_up, false);
+						} else {
+							elems[ind].attachEvent('onkeydown', key_down);
+							elems[ind].attachEvent('onkeyup', key_up);
+						};
+					};
+				};
+				
+				var basic_mode = true;
+				var old_value = null;
+				var is_valid_key = true;
+			};
+			AbitEditInfo();
+		});
+	</script>
+END;
+			}
+		}
+		break;
+	}
+}
+	
+	if ($Engine->OperationAllowed($MODULE_OUTPUT["module_id"], "places_info.handle", 0, $Auth->usergroup_id) && 0) {
+		$fields_info = $MODULE_OUTPUT['edit_info'];
+			
+		$script = "<script type=\"text/javascript\">
+			var field_types = new Array();  ";
+		
+		$faculty_ind = 0;
+		foreach($fields_info as $faculty_info) {
+			$faculty_ind++;
+			
+			$script.= "
+				field_types['$faculty_ind'] = {'budget': new Array(), 'budget_ext': new Array(), 'commerce': new Array(), 'purpose': new Array()}; 
+				";
+		
+			foreach($faculty_info['specs'] as $ind=>$field_info) {				
+				$script.= "
+					field_types['$faculty_ind'].budget[$field_info->id] = '$field_info->budget';
+					field_types['$faculty_ind'].budget_ext[$field_info->id] = '$field_info->budget_ext';
+					field_types['$faculty_ind'].commerce[$field_info->id] = '$field_info->commerce';
+					field_types['$faculty_ind'].purpose[$field_info->id] = '$field_info->purpose';
+					";
+			}
+		}
+		
+		$script.= " 
+		function do_submit() { 
+			data_str = '';
+			
+			for (var faculty_ind in field_types) {
+				for (var ind in field_types[faculty_ind]) {
+					
+					for (var id in field_types[faculty_ind][ind]) {
+						
+						value = document.getElementById(faculty_ind+'-'+ind+'-'+id).value;
+						if (value != field_types[faculty_ind][ind][id]) {
+							data_str += ind+'-'+id+'='+value+';';
+		        		}
+			    	}
+			    }
+	        }
+	      
+	      	document.getElementById('post_data').value = data_str;
+	      	
+	        return true;
+		};
+		
+		function key_down(cur_event) {
+			if (typeof(cur_event) == 'undefined') cur_event = event;
+			if ( !((cur_event.keyCode > 47 && cur_event.keyCode <58) || (!basic_mode && (cur_event.keyCode > 95 && cur_event.keyCode < 106)) || cur_event.keyCode ==8 || cur_event.keyCode == 46) ) {
+				if (cur_event.preventDefault) cur_event.preventDefault();
+				else cur_event.returnValue = false;
+				is_valid_key = false;
+     			return false;
+			} else { 
+				cur_elem = (cur_event.srcElement ? cur_event.srcElement : this); 
+				old_value = cur_elem.value;
+				is_valid_key = true;
+			}
+		}
+		
+		function key_up(cur_event) {
+			if (typeof(cur_event) == 'undefined') cur_event = event;
+			if (is_valid_key) { 
+				cur_elem = (cur_event.srcElement ? cur_event.srcElement : this);
+				var id_parts = cur_elem.id.split('_');
+				var faculty_field = document.getElementById(id_parts[0]+'_'+id_parts[1]);
+				var sum_field = document.getElementById('sum_'+id_parts[1]);
+				if (cur_elem.value == '') cur_elem.value = '0';
+				else if (cur_elem.value[0] == '0' && cur_elem.value.length > 1) cur_elem.value = cur_elem.value.substr(1);
+				var new_value = document.createTextNode(faculty_field.childNodes[0].nodeValue-old_value+parseInt(cur_elem.value));
+    			faculty_field.replaceChild(new_value, faculty_field.childNodes[0]);
+    			new_value = document.createTextNode(sum_field.childNodes[0].nodeValue-old_value+parseInt(cur_elem.value));
+    			sum_field.replaceChild(new_value, sum_field.childNodes[0]);
+			}
+		}
+		
+		function setKeyboardHandlers() { 
+			if(document.getElementsByClassName == undefined) { 
+				document.getElementsByClassName = function(cl) { 
+				var retnode = []; 
+				var elem = this.getElementsByTagName('*'); 
+				for (var i = 0; i < elem.length; i++) { 
+					var classes = elem[i].className; 
+					if (cl == classes) { 
+						retnode.push(elem[i]); 
+					} 
+				} 
+				
+				return retnode; 
+				} 
+			}; 
+			var elems = document.getElementsByClassName('info_cell');
+			for (var ind=0; ind < elems.length; ind++) {
+				if (elems[ind].addEventListener){
+					elems[ind].addEventListener('keydown', key_down, false);
+					elems[ind].addEventListener('keyup', key_up, false);
+				} else {
+					elems[ind].attachEvent('onkeydown', key_down);
+					elems[ind].attachEvent('onkeyup', key_up);
+				}
+			}
+		}
+		
+		var basic_mode = true;
+		var old_value = null;
+		var is_valid_key = true;
+		
+				
+		</script>";
+		
+		//$EE["head_extra3"][] = $script;
+	}
+?>

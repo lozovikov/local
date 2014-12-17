@@ -1,0 +1,58 @@
+#no-ie6 {
+    position: relative;
+    background: #525252;
+    height: 20px;
+    overflow: hidden;
+    z-index: 1000;
+}
+#no-ie6 #no-ie6-img {
+    position: absolute;
+    left: 30px;
+    bottom: -9px;
+    background: url("../images/iebar.png") 50% 50% no-repeat;
+    width: 193px;
+    height: 41px;
+    z-index: 1000;
+}
+#no-ie6 p {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    bottom: 0;
+    width: 100%;
+    margin: 2px auto;
+    text-align: center;
+    font-size: 12px;
+    color: #fff;
+    font-family: sans-serif;
+}
+#no-ie6 p a {
+    color: #fff;
+    text-decoration: underline;   
+}
+#no-ie6 p a:hover {
+    color: #ff0000;
+}
+#no-ie6_close {
+    position: absolute;
+    bottom: 3px;
+    right: 10px;
+    font-size: 16px;
+    color: #525252;
+    border: 1px #525252 solid;
+    line-height: 13px;
+    padding-top: 1px;
+    background: #fff;
+    font-weight: bold;
+    padding-left: 2px;
+    padding-right: 2px;
+    text-decoration: none;
+    display: none;
+}
+#no-ie6_close:hover {
+    color: #ff0000;
+    border-color: #ff0000;
+}
+#no-ie6_close.to_script {
+    display: block;
+}

@@ -1,0 +1,200 @@
+a {
+	color: #ff3d03;
+}
+#page_title {
+	position: absolute;
+	top: 55px;
+	left: 0;
+	font-size: 24px;
+	color: #ff3d03;
+	width: 100%;
+	text-transform: uppercase;
+	text-align: center;
+	z-index: 10;
+}
+	#page_title div {
+		margin: 0 220px;
+	}
+#logo_urfak {
+	position: absolute;
+	top: -55px;
+	right: -115px;
+	width: 109px;
+	height: 110px;
+	background: url("../images/logo_urfak.gif") no-repeat;
+}
+/*----------------------------------------------------------------------------*/
+#header #header_menu {
+	width: auto;
+	margin-right: 55px;
+	background: #f33805 url("../images/line_left_urfak.jpg") left top no-repeat;
+}
+#header #header_menu ul {
+	background: none;
+	padding: 0 20px 10px 20px;
+}
+#header #header_menu #menu_left_bg {
+	width: 534px;
+	background: url("../images/line_right_urfak.jpg") no-repeat;
+}
+#header #header_menu #gray_line {
+	position: absolute;
+	height: 15px;
+	width: 100%;
+	top: -18px;
+	left: 0;
+	overflow: hidden;
+	background: #c5c6c6 url("../images/gray_line_bg.jpg") top left no-repeat;
+}
+#header #header_menu #gray_line div {
+	position: relative;
+	height: 22px;
+	width: 10px;
+	float: right;
+	background: url("../images/gray_line_bg.jpg") bottom left no-repeat;
+}
+/*----------------------------------------------------------------------------*/
+.urfak .left_cont .submenu {
+	background: #ebebeb;
+	padding: 13px 10px 30px 30px;
+	margin: 0;
+	-moz-border-radius: 4px; 
+	-webkit-border-radius: 4px; 
+	-khtml-border-radius: 4px; 
+	border-radius: 4px;
+	box-shadow: 10px 10px 10px 1px #CCCCCB;
+	overflow: hidden;
+}
+	.urfak .left_cont .submenu .corner_TL,
+	.urfak .left_cont .submenu .corner_TR,
+	.urfak .left_cont .submenu .corner_BL,
+	.urfak .left_cont .submenu .corner_BR {
+		position: absolute;
+		height: 5px;
+		width: 5px;
+		overflow: hidden;
+		background: url("../images/shadow_urfak.gif") -6px -6px no-repeat;
+	}
+	.urfak .left_cont .submenu .corner_TL {
+		top: 0;
+		left: 0;
+	}
+	.urfak .left_cont .submenu .corner_TR{
+		top: 0;
+		right: 0;
+		background: url("../images/shadow_urfak.gif") 0px -6px no-repeat;
+	}
+	.urfak .left_cont .submenu .corner_BL{
+		bottom: 0;
+		left: 0;
+		background: url("../images/shadow_urfak.gif") -6px 0px no-repeat;
+	}
+	.urfak .left_cont .submenu .corner_BR {
+		bottom: 0;
+		right: 0;
+		background: url("../images/shadow_urfak.gif") 0px 0px no-repeat;
+	}
+	.urfak .left_cont .submenu ul {
+		padding: 0;
+	}
+		.urfak .left_cont .submenu li {
+			float: none;
+			width: auto;
+			/*height: 20px;*/
+			line-height: 17px;
+			list-style: none;
+			padding-right: 0px;
+			color: #ff3d03;
+			background: none;
+		}
+			.urfak .left_cont .submenu ul ul {
+				padding-left: 14px;
+			}
+				.urfak .left_cont .submenu li li {
+					float: none;
+					width: auto;
+					list-style: square;
+				}
+			.urfak .left_cont .submenu li a {
+				position: relative;
+				line-height: normal;
+				font-weight: bold;
+				overflow: hidden;
+				padding-right: 0px;
+				display: inline; 
+				width: auto;
+				height: auto;
+				color: #ff3d03;
+			}
+					.urfak .left_cont .submenu li li a {
+						font-weight: normal;
+						color: #010101;
+					}
+				.urfak .left_cont .submenu li a span {
+					position: relative;
+					width: auto;
+					overflow: hidden;
+					white-space: normal;
+					text-overflow: clip; /* IE, Chrome*/
+					-o-text-overflow: clip; /* Opera */
+					-webkit-text-overflow: clip;
+					padding: 0px;
+					margin: 0;
+					display:inline;
+					float: none;
+				}
+				.urfak .left_cont .submenu li a em {
+					display: none;
+				}
+			.urfak .left_cont .submenu li a:hover {
+				overflow: visible;
+				background: none;
+				z-index: 50;
+				
+				-moz-border-radius: 0px; 
+				-webkit-border-radius: 0px; 
+				-khtml-border-radius: 0px; 
+				border-radius: 0px;
+			}
+			.urfak .left_cont .submenu li a:hover span {
+				background: none;
+				overflow: visible;
+				width: auto;
+				white-space: normal;
+				line-height: normal;
+				padding: 0px;
+				text-decoration: underline;
+				
+				/*border: 1px #c7c7c7 solid;*/
+				-moz-border-radius: 0px; 
+				-webkit-border-radius: 0px; 
+				-khtml-border-radius: 0px; 
+				border-radius: 0px;
+			}
+/*----------------------------------------------------------------------------*/
+.news_block {
+	padding: 0 25px 11px 0;
+}
+	.news_block .news_block_title {
+		font-weight: bold;
+	}
+		/*.news_block .news_block_title a {
+			color: #004c40;
+		}*/
+	.news_block li {
+		padding: 0 0 20px 0;
+	}			
+		.news_block .news_cont {
+			padding: 4px 0 0 0; 
+		}
+			.news_block .news_title {
+				font-size: 14px;
+				font-weight: bold;
+				/*color: #004c40;*/
+			}
+				/*.news_block .news_title a {
+					color: #004c40;
+				}*/
+			/*.news_block .news_text {
+				color: #000;
+			}*/

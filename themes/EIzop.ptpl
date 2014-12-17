@@ -1,0 +1,193 @@
+<?php
+// version: 1.3
+// date: 2013-10-17
+global $Engine, $Auth, $EE;
+
+$http_scripts = HTTP_COMMON_SCRIPTS;
+
+if(isset($MODULE_OUTPUT['scripts_mode'])) {
+	switch($MODULE_OUTPUT['scripts_mode']) {
+
+case 'curriculum': {
+				$EE["head_extra3"][] = <<<END
+        <script type='text/javascript' src='{$http_scripts}jquery/jquery.form.js'></script>
+	<script type="text/javascript">
+		jQuery(document).ready(function($) {
+			Curriculum = function(moduleId) {
+				if($('#curriculum .subject_group_item form').length) {
+					$('#curriculum .subject_group_item label input').click(function() {
+						var s_id = $(this).attr('id');
+						s_id = s_id.replace('editbutton_','');
+		        		if($(this).parents('.edit_form').hasClass('del_sgroup')) {
+		        		var request = {'module': moduleId, 'mode': 'html_code', 'params': 'ajax_subjects', 'data': {'s_id': s_id} };
+		        		$.ajax({
+								url: '/ajax_mode/',
+								data: request,
+				        		beforeSend: function() {
+					        		$('#progress-bar-'+s_id).html('Загрузка...');
+								},
+				        		complete: function() {
+									$('#progress-bar-'+s_id).html('');
+								},
+								success: function(data) {
+									$('#edit_form_'+s_id).removeClass('del_sgroup').addClass('edit_sgroup');
+					        		$('#edit_form_'+s_id).find('.subject_search + a').show();
+					        		$('#edit_form_'+s_id).find('select.subject_list').replaceWith(data);
+								}
+							});
+						} else {
+			        		var s_id = $(this).attr('id');
+							s_id = s_id.replace('cancelbutton_','');
+							$(this).parents('.edit_form').addClass('del_sgroup').removeClass('edit_sgroup');
+			        		$('#edit_form_'+s_id).find('select.subject_list, .subject_search, .subject_search + a').hide(); 	
+						};
+					});
+          $('.subject_action button.action_del').click(function(){
+            return confirm('Вы уверены, что хотите удалить дисциплину? ');
+          });
+          var request = {'module': moduleId, 'mode': 'json', 'params': 'ajax_edit_subj' };
+          var action_del = 0;
+          $('#curriculum .subject_group_item form').ajaxForm({
+			            //dataType : 'json',
+						type: 'POST',
+						data: request,
+						url: '/ajax_mode/',
+						resetForm: true,
+            beforeSubmit: function(arr, form, options) { 
+                // return false to cancel submit
+                this.action_del = arr[1].value; 
+        		$(form).find('.progress-bar').html('Сохранение...');                 
+            },
+            success: function(data, statusText, xhr, form) {
+              data = $.parseJSON(data);
+        	  data = data.curriculum; 
+              
+              //if(this.action_del == 1) 
+              {
+                if(data.deleted){
+                  $('#subject_row_'+data.id).remove();
+                  return ;
+                }  
+              }
+              
+              $('#subject_row_'+data.id+' form.edit_form').addClass('del_sgroup').removeClass('edit_sgroup');
+              $('#subject_row_'+data.id+' .subj_name span').html('<a href="/subjects/'+data.subject_id+'/">'+data.subj_name+'</a>');
+              $('#subject_row_'+data.id+' .subj_semester span').html(data.semester);
+              $('#subject_row_'+data.id+' .subj_profile span').html(data.profile_name);
+				$('#subject_row_'+data.id+' .subj_department span').html(data.department);
+              $(form).find('select[name="edit_semester"]  [value="'+data.semester+'"]').attr('selected', true);
+              $(form).find('select[name="edit_subject_id"] [value="'+data.subject_id+'"]').attr('selected', true);
+              $(form).find('select[name="edit_profile_id"] [value="'+data.profile_id+'"]').attr('selected', true);
+	        	$(form).find('select.subject_list, .subject_search, .subject_search + a').hide();
+        		$(form).find('.progress-bar').html('');
+            }
+          });
+          /*$('#curriculum .subject_group_item label.action_edit').click(function(){
+            var request = {'module': moduleId, 'mode': 'html_code', 'params': 'ajax_edit_subj', 'data': {'subj_id': subj_id} };
+          });*/
+				};
+				if($('#curriculum .select_subject').length) {
+					$('#curriculum .select_subject li dd span').text($('#curriculum .select_sgroup').find(':selected').attr('title')+'.');
+					$('#curriculum .select_sgroup').change(function() {
+						$('#curriculum .select_subject li dd span').text($(this).find(':selected').attr('title')+'.');
+					});
+					$('#curriculum .select_subject dl').hide();
+					$('#curriculum .select_subject li > label').click(function() {
+						$(this).next('dl').slideToggle();
+					});
+					$('#curriculum .select_subject dt label input:checked').parent().parent().addClass('checked').next('dd').addClass('checked');
+					$('#curriculum .select_subject dt label').click(function() {
+		        		var subject_value = $(this).parent().attr('data-id');
+						if($(this).find('input').is(':checked')) {
+							$(this).parent().addClass('checked').next('dd').addClass('checked');        				
+			        		$('#subject_select').append('<li><input type="hidden" name="subject_id['+subject_value+']" value="'+subject_value+'" /> ' + $(this).text() +'</li>');
+						} else {
+							$(this).parent().removeClass('checked').next('dd').removeClass('checked');
+			        		$('#subject_select').find('[name="subject_id['+subject_value+']"]').parents('li').remove();
+						}				
+					});
+	        		$('#curriculum .select_subject a:eq(0)').click(function(){
+						$('#curriculum .select_subject dl').show();
+		        		$(this).hide(); 
+		        		$('#curriculum .select_subject a:eq(1)').show();
+					});
+	        		$('#curriculum .select_subject a:eq(1)').click(function(){
+						$('#curriculum .select_subject dl').hide();
+		        		$(this).hide(); 
+		        		$('#curriculum .select_subject a:eq(0)').show();
+					});
+				}
+			};
+        	ajaxSearchSubj = function(moduleId) {
+				var field = $('#subject_list').find('option');
+ 
+				// собственно поиск
+				/*$('#subject_search').live('keyup', function() {
+				    if($(this).val().length < 4 && $(this).val().length != 0) return ;
+					var request = {'module': moduleId, 'mode': 'html_code', 'params': 'ajax_search_subj', 'data': {'q': $(this).val()} };
+					$.ajax({
+						type: 'POST',
+						url: '/ajax_mode/', 
+						data: request,
+						success: function(data) {
+							$('#subject_list').replaceWith(data);//$('#subject_search').parent().parent().next('dd').html(data); 
+						}
+					}); 
+				});*/
+				$('.subject_search').autocomplete({
+					delay: 500,
+					source: function(request, response) {
+						var request = {'module': moduleId, 'mode': 'json', 'params': 'ajax_autocomplete_subj', 'data': {'q': request.term} };
+						$.ajax({
+						'url': '/ajax_mode/',
+						dataType: 'json',
+						data: request, 
+						success: function(json) {
+								response($.map(json, function(item) {
+								return {
+									label: item.name,
+									value: item.id
+								}
+							}));
+						}
+					})
+					},
+					select: function(event, ui) {
+						var title = ui.item.label.split(' > ');
+						title = title[title.length - 1];
+						$(this).parent().find('.subject_search').attr('value', title);
+						$(this).parent().find('.subject_list').val(ui.item.value);
+						$(this).parent().find('.subject_list, .subject_search + a').show();
+						$(this).parent().find('.subject_search').hide();
+					
+						return false;
+					},
+					focus: function(event, ui) {
+						//$(this).parent().find('.subject_list').val(ui.item.value);
+						//$(this).parent().find('.subject_list, .subject_search + a').show();
+						//$(this).parent().find('.subject_search').hide();
+        		
+		        		return false;
+				    }
+				});	
+					
+				$('.subject_search').bind('keypress', function(e) {
+					if(e.keyCode == 27 || e.keyCode == 13) {		
+						$(this).parent().find('.subject_list, .subject_search + a').show();
+						$(this).parent().find('.subject_search').hide();
+					}
+						
+					if(e.keyCode == 13) { 
+						e.preventDefault();
+						return false;
+					}
+				});
+			}
+		});
+	</script>
+END;
+		}
+		break;
+		
+	}
+}
