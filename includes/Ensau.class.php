@@ -4806,12 +4806,12 @@ class Ensau
                 {				
 					$DB->AddAltFS("name", "LIKE", "%".$part."%");//"LIKE", "%".$part."%"
 					$DB->AddCondXS("instr(name, ".$DB->ValueString($part,'S').")", "=", "1");
-					//$DB->AppendAlts();
-					//$DB->AddAltFS("last_name", "LIKE", "%".$part."%");   
-					//$DB->AddCondXS("instr(last_name, ".$DB->ValueString($part,'S').")", "=", "1");
+					$DB->AppendAlts();
+					$DB->AddAltFS("last_name", "LIKE", "%".$part."%");   
+					$DB->AddCondXS("instr(last_name, ".$DB->ValueString($part,'S').")", "=", "1");
                     //$DB->AddAltFS("patronymic", "LIKE", "%".$part."%");
 					//$DB->AddCondXS("instr(patronymic, ".$DB->ValueString($part,'S').")", "=", "1");
-                    //$DB->AppendAlts();
+                    $DB->AppendAlts();
                 }            
                 $DB->AddOrder("last_name");
                 $res = $DB->Select();

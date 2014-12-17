@@ -1,0 +1,9 @@
+#RedirectMatch (.*)/moodle http://nsau.edu.ru/biotech/
+
+
+#<IfModule mod_rewrite.c>
+	#RewriteEngine on
+	#RewriteBase /
+	#RewriteCond %{REQUEST_URI} ^/(?!moodle).*
+	#RewriteRule (.*) http://nsau.edu.ru/biotech/
+#</IfModule>
