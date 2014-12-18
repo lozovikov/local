@@ -1,0 +1,3 @@
+User-Agent: *
+Host: nsau.edu.ru
+Disallow: /scripts/
