@@ -4803,27 +4803,53 @@ class Ensau
                 $parts = explode(" ", trim($_GET["person_name"]));
                 $DB->SetTable($this->db_prefix."people");
                 foreach($parts as $part)
-                {				
+                {		
+					
+					
+					$DB->AddAltFS("last_name", "LIKE", "%".$part."%");
 					$DB->AddAltFS("name", "LIKE", "%".$part."%");//"LIKE", "%".$part."%"
-					$DB->AddCondXS("instr(name, ".$DB->ValueString($part,'S').")", "=", "1");
+					$DB->AddAltFS("patronymic", "LIKE", "%".$part."%");
+					
+					
 					$DB->AppendAlts();
-					$DB->AddAltFS("last_name", "LIKE", "%".$part."%");   
-					$DB->AddCondXS("instr(last_name, ".$DB->ValueString($part,'S').")", "=", "1");
+					
+					//$DB->AddAltXS("instr(name, ".$DB->ValueString($part,'S').")", "=", "1");
+					//$DB->AddAlt($DB->AddCondFS("last_name", "LIKE", "%".$part."%"),$DB->AddAltXS("instr(last_name, ".$DB->ValueString($part,'S').")", "=", "1"));
+					  //$DB->ResetAlts();
+					
                     //$DB->AddAltFS("patronymic", "LIKE", "%".$part."%");
 					//$DB->AddCondXS("instr(patronymic, ".$DB->ValueString($part,'S').")", "=", "1");
-                    $DB->AppendAlts();
+                   // $DB->AppendAlts();
                 }            
                 $DB->AddOrder("last_name");
+				//$DB->AddOrder("name");
+				//$DB->AddOrder("patronymic");
                 $res = $DB->Select();
                 $this->output["people"] = array();
+				$names = array();
+				$patronymics = array();
+				
+				
                 while($row = $DB->FetchAssoc($res))
                 {
 					
-					
-                    $this->output["people"][] = $row;//$row;
-					
+					if (strpos($row['last_name'],$parts[0]) !== false)
+					{
+						$this->output["people"][] = $row;	
+					}
+                    if (($row['name'][0]==$_GET["person_name"][0]))
+					{
+						$names[] = $row;	
+					}
+					if (($row['patronymic'][0]==$_GET["person_name"][0]))
+					{
+						$patronymics[] = $row;	
+					}
                 }
-				
+				$this->output["people"] = array_merge($this->output["people"], $names, $patronymics);
+				/*echo "<pre>";
+		print_r($this->output["people"][0]);
+		echo "</pre>";*/
 				if (count($this->output["people"]) == 1)
 					CF::Redirect("/people/".$this->output["people"][0]["id"]."/");
 				elseif (!count($this->output["people"]))

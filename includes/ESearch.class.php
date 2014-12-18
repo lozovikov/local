@@ -169,7 +169,7 @@ class ESearch
 		{		
 			$search_string = trim($search_string);
 			$search_string_length = strlen($search_string);
-			$this->output["search_string"] = $search_string = htmlspecialchars($search_string, ENT_COMPAT, 'cp1251'); // !!! htmlspecialchars применяю пока и к самой строке - подумать!
+			$this->output["search_string"] = $search_string = htmlspecialchars($search_string); // !!! htmlspecialchars применяю пока и к самой строке - подумать!
 
 			if ($search_string_length < $this->min_input_length)
 			{
@@ -193,21 +193,17 @@ class ESearch
 					{		
 						$parts = explode(":", $data);	
 						 									
-							/*$res2 = $DB->Exec("SELECT `name`, `global_params`
-								FROM `" . ENGINE_DB_PREFIX . "modules`
-								WHERE `id` = '" . $parts[0] . "'
-								LIMIT 1");*/
-								$res2 = $DB->Exec("SELECT `name`, `global_params`
+							$res2 = $DB->Exec("SELECT `name`, `global_params`
 								FROM `" . ENGINE_DB_PREFIX . "modules`
 								WHERE `id` = '" . $parts[0] . "'
 								LIMIT 1");
+	
 							if ($row2 = $DB->FetchObject($res2))
 							{
 								require_once INCLUDES . $row2->name . CLASS_EXT;
-								//echo "INCLUDES " . $row2->name . CLASS_EXT;
+								//echo "INCLUDES " . $row2->name . ".class";
 								//echo "<p>global_params:".$row2->global_params."</p>";
 								//echo "<p>params:".$parts[1]."</p>";
-                //var_dump( $search_string );print_r($_GET); 
 								$Module = new $row2->name(
 									$row2->global_params,
 									$parts[1],
