@@ -14,6 +14,7 @@ class Ensau
     var $maintain_cache;
     var $item_id;
 	var $Imager;
+	var $sort;
     
     /*
     В парамс передаём режим работы faculties, exi
@@ -4804,52 +4805,29 @@ class Ensau
                 $DB->SetTable($this->db_prefix."people");
                 foreach($parts as $part)
                 {		
-					
-					
-					$DB->AddAltFS("last_name", "LIKE", "%".$part."%");
-					$DB->AddAltFS("name", "LIKE", "%".$part."%");//"LIKE", "%".$part."%"
-					$DB->AddAltFS("patronymic", "LIKE", "%".$part."%");
-					
-					
+                    $DB->AddAltFS("last_name", "LIKE", "%".$part."%");
+					$DB->AddAltFS("name", "LIKE", "%".$part."%");
+					$DB->AddAltFS("patronymic", "LIKE", "%".$part."%");			
 					$DB->AppendAlts();
-					
-					//$DB->AddAltXS("instr(name, ".$DB->ValueString($part,'S').")", "=", "1");
-					//$DB->AddAlt($DB->AddCondFS("last_name", "LIKE", "%".$part."%"),$DB->AddAltXS("instr(last_name, ".$DB->ValueString($part,'S').")", "=", "1"));
-					  //$DB->ResetAlts();
-					
-                    //$DB->AddAltFS("patronymic", "LIKE", "%".$part."%");
-					//$DB->AddCondXS("instr(patronymic, ".$DB->ValueString($part,'S').")", "=", "1");
-                   // $DB->AppendAlts();
-                }            
+				}            
                 $DB->AddOrder("last_name");
-				//$DB->AddOrder("name");
-				//$DB->AddOrder("patronymic");
                 $res = $DB->Select();
-                $this->output["people"] = array();
-				$names = array();
-				$patronymics = array();
-				
-				
+                $this->output["people"] = array();	
                 while($row = $DB->FetchAssoc($res))
                 {
-					
-					if (strpos($row['last_name'],$parts[0]) !== false)
-					{
 						$this->output["people"][] = $row;	
-					}
-                    if (($row['name'][0]==$_GET["person_name"][0]))
-					{
-						$names[] = $row;	
-					}
-					if (($row['patronymic'][0]==$_GET["person_name"][0]))
-					{
-						$patronymics[] = $row;	
-					}
                 }
-				$this->output["people"] = array_merge($this->output["people"], $names, $patronymics);
-				/*echo "<pre>";
-		print_r($this->output["people"][0]);
-		echo "</pre>";*/
+
+				
+				//echo "<pre>";
+		//print_r($parts);
+		//echo "</pre>";
+		
+		$this->output["people"] = $this->sort_people($this->output["people"], $parts[0],1);
+		if(!empty($parts[1]))
+		$this->output["people"] = $this->sort_people($this->output["people"], $parts[1],2);
+		if(!empty($parts[2]))
+		$this->output["people"] = $this->sort_people($this->output["people"], trim($parts[2]),3);
 				if (count($this->output["people"]) == 1)
 					CF::Redirect("/people/".$this->output["people"][0]["id"]."/");
 				elseif (!count($this->output["people"]))
@@ -4860,6 +4838,79 @@ class Ensau
 			$this->output["allow_addman"] = $Engine->OperationAllowed($this->module_id, "people.add", -1, $Auth->usergroup_id);
 		}
     }
+	
+	function sort_people($arr, $part, $mode)
+	{
+		if (!empty($part) && !empty($arr))
+		{
+			switch ($mode)
+			{
+				case 1:
+				foreach ($arr as $row)
+				{
+					if (((strripos(strtolower($row['last_name']),strtolower($part)) !== false) && (strripos(strtolower($row['last_name']),strtolower($part)) === 0)) && ((strripos(strtolower($row['name']),strtolower($part)) !== false) && (strripos(strtolower($row['name']),strtolower($part)) === 0)) && ((strripos(strtolower($row['patronymic']),strtolower($part)) !== false) && (strripos(strtolower($row['patronymic']),strtolower($part)) === 0)))
+					{
+						$result[0][] = $row;	
+					}
+                    elseif (((strripos(strtolower($row['last_name']),strtolower($part)) !== false) && (strripos(strtolower($row['last_name']),strtolower($part)) === 0)) && ((strripos(strtolower($row['name']),strtolower($part)) !== false) && (strripos(strtolower($row['name']),strtolower($part)) === 0)))
+					{
+						$result[1][]=$row;
+					}
+                    elseif (((strripos(strtolower($row['last_name']),strtolower($part)) !== false) && (strripos(strtolower($row['last_name']),strtolower($part)) === 0)) && ((strripos(strtolower($row['patronymic']),strtolower($part)) !== false) && (strripos(strtolower($row['patronymic']),strtolower($part)) === 0)))
+					{
+						$result[2][]=$row;
+					}
+                    elseif ((strripos(strtolower($row['last_name']),strtolower($part)) !== false) && (strripos(strtolower($row['last_name']),strtolower($part)) === 0))
+					{
+						$result[3][] = $row;	
+					}
+                    elseif (((strripos(strtolower($row['name']),strtolower($part)) !== false) && (strripos(strtolower($row['name']),strtolower($part)) === 0)) && ((strripos(strtolower($row['patronymic']),strtolower($part)) !== false) && (strripos(strtolower($row['patronymic']),strtolower($part)) === 0)))
+					{
+						$result[4][] = $row;	
+					}
+					elseif ((strripos(strtolower($row['name']),strtolower($part)) !== false) && (strripos(strtolower($row['name']),strtolower($part)) === 0))
+					{
+						$result[5][] = $row;	
+					} 
+					elseif ((strripos(strtolower($row['patronymic']),strtolower($part)) !== false) && (strripos(strtolower($row['patronymic']),strtolower($part)) === 0))
+					{
+						$result[6][] = $row;	
+					} 		
+			
+				}
+				$sort = array();
+				for ($i=0;$i<=6;$i++)
+				{
+					if (!empty($result[$i]))
+						$sort = array_merge($sort, $result[$i]);
+				}			
+					return $sort;
+				break;
+				case 2:
+				foreach ($arr as $row)
+				{				
+                    if ((strripos(strtolower($row['name']),strtolower($part)) !== false) && (strripos(strtolower($row['name']),strtolower($part)) === 0))
+					{
+						$sort[] = $row;	
+					}
+				}
+				return $sort;				
+				break;
+				case 3:
+				foreach ($arr as $row)
+				{				
+                    if ((strripos(strtolower($row['patronymic']),strtolower($part)) !== false) || (strripos(strtolower($row['patronymic']),strtolower($part)) === 0))
+					{
+						$sort[] = $row;	
+					}
+				}
+				return $sort;				
+				break;						
+			}	
+		}
+		else false;	
+	}
+	
 	
 	function edit_people($module_uri) {
 		global $DB, $Engine, $Auth;

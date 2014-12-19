@@ -1723,14 +1723,14 @@ switch($MODULE_OUTPUT["mode"])
                     echo "</ul>";
                 }
 			}
-        }
-        else
+        } 
+        else 
         {
             ?>
             <form action="/people/" method="get">
             <p>
             Человек:
-            <input name="person_name" type="text" size="35" value="<?php echo isset($_GET["person_name"]) ? $_GET["person_name"] : "" ?>"/> <input type="submit" value="Найти" class="button"/>
+            <input name="person_name" type="text" size="35" placeholder="ФИО" value="<?php echo isset($_GET["person_name"]) ? $_GET["person_name"] : "" ?>"/> <input type="submit" value="Найти" class="button"/>
             </p>
             </form>
             <?
