@@ -7027,36 +7027,26 @@ class Ensau
 			$DB->AddCondFS("group_id", "=", $_GET["gr"]);
 			$DB->Delete();
 
-			$DB->SetTable("nsau_groups");
-			$DB->AddCondFS("id", "=", $_GET["gr"]);
-			$res = $DB->Select();
-			$row = $DB->FetchAssoc($res);
-
-			$DB->SetTable("nsau_groups");
-			$DB->AddCondFS("form_education", "=", $row["form_education"]);
-			$DB->AddCondFS("year", "=", $row["year"]);
-			$DB->AddCondFS("id_faculty", "=", $row["id_faculty"]);
-			$res = $DB->Select();
-
-			$grs = array();
-			while ($row = $DB->FetchAssoc($res))
-				$grs[] = $row["id"];
-
 			for ($week=0; $week<=1; $week++) {
 				for($day=0; $day<=6; $day++) {
 					for($pair=0; $pair<=6; $pair++) {
 						$wdps = array($week."_".$day."_".$pair, $week."_".$day."_".$pair."_d");
 						foreach ($wdps as $wdp) {
 							if ($_POST["subj_".$wdp]) {
-								if (isset($_POST["copy_".$wdp])) {
+								if (isset($_POST["copy_".$wdp]) && is_array($_POST["copy_".$wdp])) {
+									$grs = $_POST["copy_".$wdp];
+									$grs[] = $_GET["gr"];
+
 									foreach($grs as $group_id) {
 										$DB->SetTable("nsau_timetable_new");
-										$DB->AddValue("day", $day);
-										$DB->AddValue("week", $week);
-										$DB->AddValue("pair", $pair);
+										$DB->AddCondFS("day","=",$day);
+										$DB->AddCondFS("week","=",$week);
+										$DB->AddCondFS("pair","=",$pair);
 										$DB->AddCondFS("group_id","=",$group_id);
+										if (isset($_POST["subgr_".$wdp]) && $_POST["subgr_".$wdp])
+											$DB->AddCondFS("subgroup","=",$_POST["subgr_".$wdp]);
 										$DB->Delete();
-								
+
 
 										$DB->SetTable("nsau_timetable_new");
 										$DB->AddValue("group_id", $group_id);
@@ -7110,6 +7100,21 @@ class Ensau
 			$DB->AddValue("actual_from", implode("-",array_reverse(explode(".",$_POST["actual_from"]))));
 			$DB->AddValue("actual_to", implode("-",array_reverse(explode(".",$_POST["actual_to"]))));
 			$DB->Insert();
+		}
+
+		$DB->SetTable("nsau_groups");
+		$DB->AddCondFS("id", "=", $_GET["gr"]);
+		$res = $DB->Select();
+		$row = $DB->FetchAssoc($res);
+
+		$DB->SetTable("nsau_groups");
+		$DB->AddCondFS("form_education", "=", $row["form_education"]);
+		$DB->AddCondFS("year", "=", $row["year"]);
+		$DB->AddCondFS("id_faculty", "=", $row["id_faculty"]);
+		$res = $DB->Select();
+
+		while ($row = $DB->FetchAssoc($res)){
+			$this->output["potok"][$row["id"]] = $row["name"];
 		}
 
 		$DB->SetTable("nsau_groups");
