@@ -1933,6 +1933,33 @@ switch($MODULE_OUTPUT["mode"])
 						</dl>
 <?php		} ?>
 					</div>					
+				<div class="form-notes">
+		
+						<dl>
+							<dt><label>Выберите дисциплины:</label></dt>
+							<dd>
+								<ul id="subject_select" class="select_long" >
+<?php     		foreach($MODULE_OUTPUT["departments_subj"] as $dep_name => $subjects ) { ?>
+									<li>
+										<dl>
+											<dt id="als_dep_name"></dt>
+											
+											<dt><?=$dep_name?></dt>
+<?php				foreach($subjects as $subj) { ?>
+											<dd id="subid_<?=$subj["id"]."_".$MODULE_OUTPUT["departments_subj"][$dep_name][0]["department_id"]?>" <?=isset($man["subjects"][$MODULE_OUTPUT["departments_subj"][$dep_name][0]["department_id"]][$subj["id"]]) ? " class='hidden'" : ""?> title="<?=$subj["name"]?>"><?=$subj["name"]?></dd>
+<?php				} ?>
+										</dl>
+									</li>
+<?php			} ?>
+								</ul>
+							</dd>
+						</dl>		
+				</div>			
+			</div>
+				
+				
+				
+				<div class="wide">
 					<div class="form-notes">
 <?php		if(!$MODULE_OUTPUT["current_department"]) { ?>
 						<dl>
@@ -1940,7 +1967,21 @@ switch($MODULE_OUTPUT["mode"])
 							<dd>
 								<ul id="department_list">
 <?php			foreach($man["department"] as $dep_id => $dep) { ?>
-									<li><?=$dep?><input type="hidden" value="<?=$dep_id?>" name="department[<?=$dep_id?>]" /><em class="inline-block"></em></li>
+									<li><b><?=$dep?></b><input type="hidden" value="<?=$dep_id?>" name="department[<?=$dep_id?>]" /><em class="inline-block"></em>
+							<ul id="subject_list_<?=$dep_id?>">
+							<?
+							if (!empty($man["subjects"][$dep_id])) { ?>
+							
+								<? foreach ($man["subjects"][$dep_id] as $subj_id => $subj_name) { ?>
+							
+							
+							<li><?=$subj_name?><input type="hidden" value="<?=$subj_id?>" name="subject[<?=$dep_id?>][<?=$subj_id?>]" /><em class="inline-block"></em> </li>
+							
+							<? } ?>
+							
+							<? } ?>
+							</ul>		
+									
 <?php			} ?>			
 								</ul>
 							</dd>
@@ -1957,8 +1998,35 @@ switch($MODULE_OUTPUT["mode"])
 							</dd>
 						</dl>
 <?php		} ?>
-					</div>
+					</div>				
+
 				</div>
+				
+				
+				
+<? /*				
+<div class="wide">
+<pre>
+
+/*foreach ($_POST["subject"] as $subj => $subj2) {
+echo $subj."--".$subj2."<br/>";
+foreach($subj2 as $key => $val)
+echo "[".$val."]";
+}
+
+
+//print_r($man["subjects"]);
+
+<div id="content12">-1-</div>  
+</pre>
+</div>				
+*/ ?>			
+				
+				
+
+				
+				
+				
 				<div class="wide">
 					<div class="form-notes">
 						<dl>
@@ -2140,6 +2208,7 @@ switch($MODULE_OUTPUT["mode"])
 				</div><?php } ?>
 				<div class="wide">
 					<p>						
+						
 						<input type="hidden" value="edit_people" name="mode" />
 						<input type="submit" value="Готово" class="button"/>
 					</p>
@@ -3877,13 +3946,13 @@ $form_edu = array(  1=>"Очная", 2=>"Заочная", 3=>"Очно-заочная" );
 					<tr>
 						<th width="5%">Пара</th>
 						<th width="5%">Неделя</th>
-						<th width="40%">Дисциплина</th>
-						<th width="10%">Вид</th>
-						<th<? if ($MODULE_OUTPUT["mode"]=="timetable_make") { ?> style="min-width: 150px;"<? } else { ?> width="10%"<? } ?>>Подгруппа</th>
+						<th width="30%">Дисциплина</th>
+						<th width="5%">Вид</th>
+						<th<? if ($MODULE_OUTPUT["mode"]=="timetable_make") { ?> style="width: 10%"<? } else { ?> width="10%"<? } ?>>Подгруппа</th>
 						<th width="12%">Аудитория</th>
 						<th width="23%">Преподаватель</th>
-						<? if ($MODULE_OUTPUT["mode"]=="timetable_make") { ?><th>Комментарий</th><? } ?>
-						<? if ($MODULE_OUTPUT["mode"]=="timetable_make") { ?><th>Скопировать</th><? } ?>
+						<? if ($MODULE_OUTPUT["mode"]=="timetable_make") { ?><th width="10%">Комментарий</th><? } ?>
+						<? if ($MODULE_OUTPUT["mode"]=="timetable_make") { ?><th width="5%">Скопировать</th><? } ?>
 					</tr>
 					<? $rownum = 0;
 					foreach ($pairs as $pnum => $pr) {
@@ -3909,20 +3978,20 @@ $form_edu = array(  1=>"Очная", 2=>"Заочная", 3=>"Очно-заочная" );
 							<tr<?=$trstyle?> id="tr_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_double<? } ?>">
 								<? if(!isset($arr[$day][$pnum])) { ?><td valign="middle" rowspan="<?=$rowspan_count?>" id="rowspan_<?=$day?>_<?=$pnum?>"><?=$pr?></td><? } ?>
 								<td><? echo ($wname=="even") ? 'ЧЕТ' : 'НЕЧЕТ'; ?><p align="center"><img title="Очистить" style="cursor: pointer;" src="/themes/styles/delete.png" onclick="if(confirm('Очистить пару?')) clear_row('<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>');"; /></p></td>
-								<td valign="top"><select style="max-width: 300px;" class="subjs" def="<?=$curpair["subject_id"]?>" name="subj_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>" id="subj_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>"></select><br /><input type="text" style="width: 100px; font-style: italic; color: #aaa;" value="начните ввод..." onfocus="if (this.value=='начните ввод...') this.value='';" onkeyup="select_filter('subj_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>', this.value, 'subjlist');" /><? if (!$is_double && !$pairzz[1]) { ?><p id="addouble_<?=$wnum?>_<?=$day?>_<?=$pnum?>"><a cursor="pointer" onclick="show_doublepair('<?=$wnum?>','<?=$day?>_<?=$pnum?>');"><small>Добавить пару</small></a></p><? } ?></td>
+								<td valign="top"><select style="max-width: 200px;" class="subjs" def="<?=$curpair["subject_id"]?>" name="subj_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>" id="subj_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>"></select><br /><input type="text" style="width: 100px; font-style: italic; color: #aaa;" value="начните ввод..." onfocus="if (this.value=='начните ввод...') this.value='';" onkeyup="select_filter('subj_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>', this.value, 'subjlist');" /><? if (!$is_double && !$pairzz[1]) { ?><p id="addouble_<?=$wnum?>_<?=$day?>_<?=$pnum?>"><a cursor="pointer" onclick="show_doublepair('<?=$wnum?>','<?=$day?>_<?=$pnum?>');"><small>Добавить пару</small></a></p><? } ?></td>
 
-								<td valign="top"><select style="max-width: 200px" onchange="subgroup_switch(this.value,<?=$wnum?>,<?=$day?>,<?=$pnum?>,<? if ($is_double) { ?>1<? } else { ?>0<? } ?>);" name="type_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>"><? foreach ($types as $tid => $type) { ?><option value="<?=$tid?>"<? if($curpair && $curpair["type"] == $tid) { ?> selected="selected"<? } ?>><?=$type?></option><? } ?></select></td>
+								<td valign="top"><select style="max-width: 150px" onchange="subgroup_switch(this.value,<?=$wnum?>,<?=$day?>,<?=$pnum?>,<? if ($is_double) { ?>1<? } else { ?>0<? } ?>);" name="type_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>"><? foreach ($types as $tid => $type) { ?><option value="<?=$tid?>"<? if($curpair && $curpair["type"] == $tid) { ?> selected="selected"<? } ?>><?=$type?></option><? } ?></select></td>
 
-								<td valign="top"><span<? if (!$curpair || !$curpair["type"]) $dispnone = ' display: none;'; else $dispnone = ''; ?> style="max-width: 230px;<?=$dispnone?>" id="subgr_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>"><? foreach ($subgroups as $snum => $subgr) { ?><input type="radio" name="subgr_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>" value="<?=$snum?>"<? if($curpair && $curpair["subgroup"] == $snum) { ?> checked="checked"<? } ?> /> <?=$subgr?><? } ?></span></td>
+								<td valign="top"><span<? if (!$curpair || !$curpair["type"]) $dispnone = ' display: none;'; else $dispnone = ''; ?> style="<?=$dispnone?>" id="subgr_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>"><? foreach ($subgroups as $snum => $subgr) { ?><input type="radio" name="subgr_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>" value="<?=$snum?>"<? if($curpair && $curpair["subgroup"] == $snum) { ?> checked="checked"<? } ?> /> <?=$subgr?><br/><? } ?></span></td>
 
-								<td valign="top"><select style="max-width: 230px;" id="aud_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>" name="aud_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>"><option></option><? foreach ($MODULE_OUTPUT["auds"] as $k => $v) { ?><option value="<?=$k?>"><?=$v["label"]?> - <?=$v["aud_name"]?></option><? } ?></select><br /><input type="text" style="width: 100px; font-style: italic; color: #aaa;" value="начните ввод..." onfocus="if (this.value=='начните ввод...') this.value='';" onkeyup="select_filter('aud_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>', this.value, 'audlist');" /> <input type="button" onclick="addtolist('aud','<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>');" value="добавить" /><input type="hidden" name="aud_ids_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>" id="aud_ids_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>" value="<? echo ($curpair && $curpair['auditorium_id']) ? $curpair['auditorium_id'] : ''; ?>" />
+								<td valign="top"><select style="max-width: 120px;" id="aud_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>" name="aud_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>"><option></option><? foreach ($MODULE_OUTPUT["auds"] as $k => $v) { ?><option value="<?=$k?>"><?=$v["label"]?> - <?=$v["aud_name"]?></option><? } ?></select><br /><input type="text" style="width: 100px; font-style: italic; color: #aaa;" value="начните ввод..." onfocus="if (this.value=='начните ввод...') this.value='';" onkeyup="select_filter('aud_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>', this.value, 'audlist');" /> <input type="button" onclick="addtolist('aud','<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>');" value="добавить" /><input type="hidden" name="aud_ids_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>" id="aud_ids_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>" value="<? echo ($curpair && $curpair['auditorium_id']) ? $curpair['auditorium_id'] : ''; ?>" />
 									<p id="aud_names_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>">
 										<? if ($curpair && $curpair["auditorium_id"]) { $tchs = explode(";", $curpair["auditorium_id"]); 
 										foreach ($tchs as $tval) if ($tval) echo "<span id='aud_id_".$tval."_".$wnum."_".$day."_".$pnum.($is_double?'_d':'')."'>- ".$MODULE_OUTPUT["auds"][$tval]["label"]." - ". $MODULE_OUTPUT["auds"][$tval]["aud_name"] ." [<a style='cursor:pointer;' onclick='delfromlist(\"aud\", \"".$wnum."_".$day."_".$pnum.($is_double?'_d':'')."\", $tval)'>x</a>]<br /></span>";
 										} ?>
 									</p></td>
 
-								<td valign="top"><select style="max-width: 230px;" id="teach_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>" name="teach_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>"><option></option><? foreach ($MODULE_OUTPUT["teachers"] as $k => $v) { ?><option value="<?=$k?>"><?=$v["last_name"]?> <?=substr($v["name"],0,1)?>. <?=substr($v["patronymic"],0,1)?>.</option><? } ?></select><br /><input type="text" style="width: 100px; font-style: italic; color: #aaa;" value="начните ввод..." onfocus="if (this.value=='начните ввод...') this.value='';" onkeyup="select_filter('teach_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>', this.value, 'teachlist');" /> <input type="button" onclick="addtolist('teach','<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>');" value="добавить" /><input type="hidden" name="teach_ids_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>" id="teach_ids_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>" value="<? echo ($curpair && $curpair['teacher_id']) ? $curpair['teacher_id'] : ''; ?>" />
+								<td valign="top"><select style="max-width: 120px;" id="teach_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>" name="teach_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>"><option></option><? foreach ($MODULE_OUTPUT["teachers"] as $k => $v) { ?><option value="<?=$k?>"><?=$v["last_name"]?> <?=substr($v["name"],0,1)?>. <?=substr($v["patronymic"],0,1)?>.</option><? } ?></select><br /><input type="text" style="width: 100px; font-style: italic; color: #aaa;" value="начните ввод..." onfocus="if (this.value=='начните ввод...') this.value='';" onkeyup="select_filter('teach_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>', this.value, 'teachlist');" /> <input type="button" onclick="addtolist('teach','<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>');" value="добавить" /><input type="hidden" name="teach_ids_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>" id="teach_ids_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>" value="<? echo ($curpair && $curpair['teacher_id']) ? $curpair['teacher_id'] : ''; ?>" />
 									<p id="teach_names_<?=$wnum?>_<?=$day?>_<?=$pnum?><? if ($is_double) { ?>_d<? } ?>">
 										<? if ($curpair && $curpair["teacher_id"]) { $tchs = explode(";", $curpair["teacher_id"]); 
 										foreach ($tchs as $tval) if ($tval) echo "<span id='teach_id_".$tval."_".$wnum."_".$day."_".$pnum.($is_double?'_d':'')."'>- ".$MODULE_OUTPUT["teachers"][$tval]["last_name"]." ".substr($MODULE_OUTPUT["teachers"][$tval]["name"], 0, 1).". ".substr($MODULE_OUTPUT["teachers"][$tval]["patronymic"], 0, 1).". [<a style='cursor:pointer;' onclick='delfromlist(\"teach\", \"".$wnum."_".$day."_".$pnum.($is_double?'_d':'')."\", $tval)'>x</a>]<br /></span>";

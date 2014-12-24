@@ -53,6 +53,8 @@ class EAjax
 					if(isset($data["json"])) $data = $data["json"]; 
 					if(!empty($content)) $data["output"] = $content;
 					$data = CF::ArrMap($data, function($str){ return CF::Win2Utf($str); }); 
+					
+					
 					$data = json_encode($data);
 				}
 				

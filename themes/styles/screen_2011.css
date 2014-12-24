@@ -713,6 +713,51 @@ input[type=submit]:active:hover {
 	cursor: pointer;
 	vertical-align: bottom;
 }
+/*---Список выбора дисциплин в форме создания/редактирования преподов---*/
+#subject_select {
+	height: 224px;
+	overflow: hidden;
+	overflow-y: auto;
+	padding: 1px 0;
+	border: 1px #f0f0f0 inset;
+}
+	#subject_select li,
+	#subject_select dt,
+	#subject_select dd {
+		line-height: 16px;
+		cursor: default;
+		white-space: nowrap;
+		overflow: hidden;
+	}
+	#subject_select li.selected,
+	#subject_select dd.selected {
+		background: #3399FF;
+		color: #fff;
+	}
+		#subject_select dl {
+			
+		}
+			#subject_select dt {
+				font-weight: bold;
+				font-style: italic;
+			}
+			#subject_select dd {
+				min-height: 0;
+				padding: 0 0 0 20px;
+				-moz-user-select: none;
+				-webkit-user-select: none;
+				-o-user-select: none;
+			}
+#subject_list li em {
+	display: inline-block;
+	height: 16px;
+	width: 16px;
+	margin: 0 0 0 5px;
+	background: url("../images/delete.png") no-repeat;
+	cursor: pointer;
+	vertical-align: bottom;
+}
+  
 /*----------------------------------Add people--------------------------------*/
 #people_form .add_status ul {
 	/*height: 48px;*/

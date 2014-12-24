@@ -111,6 +111,12 @@ class Ensau
 					$this->output["scripts_mode"] = $this->output["mode"] = "edit_people";
 					$this->edit_people($this->module_uri);
 				}
+				break;
+			case "ajax_load_subjects": {
+				$this->output["mode"] = "ajax_load_subjects";
+                $this->ajax_load_subjects($_REQUEST['data']['dep_id']);
+				
+			}
                 break;
 			case "prof_choice":
 				$this->output["scripts_mode"] = $this->output["mode"] = "prof_choice";
@@ -462,6 +468,28 @@ class Ensau
                 
         }
     }
+	
+	
+	function ajax_load_subjects($var)
+	{
+		global $DB;	
+		$DB->SetTable($this->db_prefix."departments");
+		$DB->AddAltFS("id", "=", $var);
+		$DB->AppendAlts();
+		$res =  $DB->Select();
+		$dep_name = $DB->FetchAssoc($res);					
+		$DB->SetTable($this->db_prefix."subjects");
+		$DB->AddAltFS("department_id", "=", $var);
+		$DB->AppendAlts();
+		$res =  $DB->Select();
+		$qw["department"] = $dep_name["name"];
+		while($row = $DB->FetchAssoc($res)) 
+			{
+				$qw["subjects"][$row["id"]] = $row["name"]; //Выбранные дисциплины на выбранных кафедрах
+			}	 
+		$this->output["data"]=$qw;
+	}
+	
 	
 	function studentModeration() {
 		global $DB, $Engine, $Auth;
@@ -4467,6 +4495,11 @@ class Ensau
             $this->output["privileges"]["specialities.handle"] = $Engine->OperationAllowed(5, "specialities.handle", -1, $Auth->usergroup_id); 
     }
        
+	   function testtest()
+	   {
+		   $this->output["testtest"] = "TEST";
+	   }
+	   
     function faculties()
     {
         global $DB;
@@ -4908,7 +4941,8 @@ class Ensau
 				break;						
 			}	
 		}
-		else false;	
+		else 
+			return false;	
 	}
 	
 	
@@ -5435,21 +5469,40 @@ class Ensau
 				}
             }
         }
+		
+		$DB->AddTable($this->db_prefix."subj_list");//
+		$DB->AddField("people_id");//
+		$DB->AddCondFS("people_id", "=", $man['id']);//
+		$res = $DB->Select();//
+		$subj_count = $DB->FetchAssoc($res);
+		
 		if(isset($man)) {
 			$DB->AddTable($this->db_prefix."teachers", "t");
             $DB->AddTable($this->db_prefix."departments", "d");
             $DB->AddCondFS("t.people_id", "=", $man['id']);
-            $DB->AddCondFF("t.department_id", "=", "d.id");
+			$DB->AddCondFF("t.department_id", "=", "d.id");				
             $DB->AddField("d.name", "department_name");
             $DB->AddField("t.department_id", "department_id");
             $DB->AddField("t.id", "teacher_id");
             $DB->AddField("t.post", "post");
             $DB->AddField("t.is_curator", "is_curator");
-            $DB->AddField("t.curator_text", "curator_text");
+            $DB->AddField("t.curator_text", "curator_text");			
             $DB->AddCondFS("d.is_active", "=", 1);
-            $res = $DB->Select();
+			if ($subj_count != false)
+			{
+				$DB->AddTable($this->db_prefix."subj_list", "sl");//
+				$DB->AddTable($this->db_prefix."subjects", "s");//
+				$DB->AddCondFS("sl.people_id", "=", $man['id']);//
+				$DB->AddField("s.name", "subject_name");//
+				$DB->AddField("s.id", "subject_id");//
+				$DB->AddField("s.department_id", "dep_subject_id");//
+				$DB->AddCondFF("s.id", "=", "sl.subject_id");//
+            }
+			$res = $DB->Select();
 			while($row = $DB->FetchAssoc($res)) {
 				$man["department"][$row["department_id"]] = $row["department_name"];
+				if ($row["dep_subject_id"]==$row["department_id"])//
+				 $man["subjects"][$row["department_id"]][$row["subject_id"]] = $row["subject_name"];//
                 $man["post"] = $row["post"];
                 $man["is_curator"] = $row["is_curator"];
                 $man["curator_text"] = $row["curator_text"];
@@ -5523,7 +5576,36 @@ class Ensau
 					$this->output["current_department"][$row["department_id"]] = $row["department_name"]; 
 				}
             }			
-			$this->output["editperson"] = $man;
+			
+	 $this->output["editperson"] = $man;
+
+			if (!empty($this->output["editperson"]["department"])) 
+			{
+				foreach ($this->output["editperson"]["department"] as $dep_id => $dep_name)
+				{
+					$DB->SetTable($this->db_prefix."subjects");
+					$DB->AddAltFS("department_id", "=", $dep_id);
+					$DB->AppendAlts();
+					$res =  $DB->Select();
+					while($row = $DB->FetchAssoc($res)) 
+					{
+						$this->output["departments_subj"][$dep_name][] = $row; //Дисциплины на выбранных кафедрах
+					}		 
+				}
+				$DB->SetTable($this->db_prefix."subj_list");
+				$DB->AddAltFS("people_id", "=", $this->output["editperson"]["id"]);
+				$DB->AppendAlts();
+				$res =  $DB->Select();
+				while($row = $DB->FetchAssoc($res)) 
+				{
+					$this->output["current_subject"][$row["department_id"]] = $row["subject_id"]; //Выбранные дисциплины на выбранных кафедрах
+				}					
+			}
+			else
+						$this->output["departments_subj"] = 1;   
+			
+	
+			
         }		
 		if (!isset($_POST["last_name"])) {
 			//$Engine->AddFootstep("/people/".$parts[1]."/", $man["last_name"]." ".$man["name"]." ".$man["patronymic"]);
@@ -5865,6 +5947,27 @@ class Ensau
 									$DB->AddCondFS("people_id", "=", $peopleid);
 									$DB->Delete();
 								}
+								
+							
+								
+								//if(isset($_POST["subject"])) {
+								$DB->SetTable($this->db_prefix."subj_list");
+								$DB->AddCondFS("people_id", "=", $peopleid);
+								$DB->Delete();
+								//}
+								
+								foreach($_POST["subject"] as $dep_id => $subjects) {
+									foreach($subjects as $subj_id => $subj)
+									{
+										$DB->SetTable($this->db_prefix."subj_list");
+										$DB->AddValue("people_id", $peopleid);
+										$DB->AddValue("department_id", $dep_id);
+										$DB->AddValue("subject_id", $subj_id);
+										$DB->Insert();
+									}				
+								}
+						
+								
 								foreach($_POST["department"] as $dep) {
 									if($dep) {
 										$DB->SetTable($this->db_prefix."teachers");
@@ -7326,7 +7429,6 @@ class Ensau
                     }
                     $this->output["timetable_groups"][] = $row;
                 }
-				
                 $DB->SetTable($this->db_prefix."faculties");
 				$DB->AddCondFP("is_active");
                 $DB->AddOrder("name");

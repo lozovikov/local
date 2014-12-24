@@ -273,28 +273,107 @@ END;
 						$('#usergroup').addClass('hidden');
 					};
 				});
-				$('#department_select dd').click(function() {
+				
+				
+				/*function template(row, arr)
+				{
+					row.find('.als_d').text(arr);
+				
+				}*/
+				
+				
+				
+				function ajax_load_subjlist(depId)  
+					{  
+            
+						var request = {'module': '5', 'mode': 'json', 'params': 'ajax_load_subjects', 'data': {'dep_id': depId} };
+							$.ajax({
+								type: 'POST',
+								url: '/ajax_mode/',
+								data: request,
+								success: function(json){  
+						
+						var cart = JSON.parse ( json );
+						$("#als_dep_name").text(cart.data.department);
+						$("#content12").text(cart.data.subjects[418]); 						
+						for (var i in cart.data.subjects)
+						{
+						$('#als_dep_name').after('<dd id="subid_'+i+'_'+depId+'" title="'+cart.data.subjects[i]+'">'+cart.data.subjects[i]+'</dd>');
+						}
+						
+						$('#subject_select').on('click', 'dd', function() {
+								$('#subject_select dd').click(function() {
+								$('#subject_select dd').removeClass('selected');
+								$(this).addClass('selected');
+								}).dblclick(function() {
+									if(!$(this).hasClass('hidden')) {
+									var option = $(this);
+									var option_val = option.attr('id').split('_');
+									$('#subject_list_'+option_val[2]).append('<li><input type=hidden name=subject['+option_val[2]+']['+option_val[1]+'] value='+option_val[1]+' />'+option.text()+'<em class="inline-block"></em></li>');
+									option.addClass('hidden');
+									option.removeClass('selected');
+									};
+								});					
+							});
+						
+
+								}
+							});
+					}
+					
+
+         $('#department_select dd').click(function() {
 					$('#department_select dd').removeClass('selected');
+					$(this).addClass('selected');
+				}).dblclick(function() {
+					
+					if(!$(this).hasClass('hidden')) {
+						var option = $(this);
+						var option_val = option.attr('id').split('_');
+						option_val = option_val[1];
+						ajax_load_subjlist(option_val);
+						$('#department_list').append('<li><input type=hidden name=department['+option_val+'] value='+option_val+'><b>'+option.text()+'</b><em class="inline-block"  id="new_dep"></em></li>');
+						if ($('#curator_groups')) {
+							$('#curator_groups').append('<optgroup id=\''+option_val+'\' label=\''+option.text()+'\'><option></option></optgroup>');
+						}
+						$('#new_dep').after('<ul id="subject_list_'+option_val+'"></ul>');
+						$("em").removeAttr("id");
+						option.addClass('hidden');
+						option.removeClass('selected');
+					};
+				});
+				$('#subject_select dd').click(function() {
+					$('#subject_select dd').removeClass('selected');
 					$(this).addClass('selected');
 				}).dblclick(function() {
 					if(!$(this).hasClass('hidden')) {
 						var option = $(this);
 						var option_val = option.attr('id').split('_');
-						option_val = option_val[1];
-						$('#department_list').append('<li><input type=hidden name=department['+option_val+'] value='+option_val+' />'+option.text()+'<em class="inline-block"></em></li>');
-						if ($('#curator_groups')) {
-							$('#curator_groups').append('<optgroup id=\''+option_val+'\' label=\''+option.text()+'\'><option></option></optgroup>');
-						}
+						//option_val = option_val[1];
+						$('#subject_list_'+option_val[2]).append('<li><input type=hidden name=subject['+option_val[2]+']['+option_val[1]+'] value='+option_val[1]+'>'+option.text()+'<em class="inline-block"></em></li>');
+						
 						option.addClass('hidden');
 						option.removeClass('selected');
 					};
-				});
+				});				
+				
+	/*
 				$('#department_list li em').live('click', function(){
 					var dep_val = $(this).parent().find('input').attr('value');
 					var option = $('#department_select #depid_'+dep_val);
 					option.removeClass('hidden');
 					$(this).parent().remove();
 				});
+		*/		
+				
+				$('#department_list li em').live('click', function(){
+					var dep_val = $(this).parent().find('input').attr('value');
+					var option = $('#department_select #depid_'+dep_val);
+					option.removeClass('hidden');
+					$(this).parent().remove();
+				});
+				
+				
 
 				SetCuratorGroupsSelectHandlers = function(container, sourceSelect,destSelect,sourceSelector, destSelector, destDataName) {
 														
